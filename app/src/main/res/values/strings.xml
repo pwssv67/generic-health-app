@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Health Counter</string>
+    <string name="hello_main">Привет</string>
+    <string name="whats_new">Что у тебя нового?</string>
+    <string name="glasses">Стаканов</string>
+    <string name="calories">Калорий</string>
+    <string name="minutes">Минут</string>
+    <string name="add">Добавить</string>
+    <string name="how_much_add">Сколько добавить?</string>
+    <string name="d">\@strings/minutes</string>
+</resources>

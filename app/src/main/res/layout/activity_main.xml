@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:id="@+id/layout_main">
+
+    <View
+        android:id="@+id/v_header"
+        android:layout_width="match_parent"
+        android:layout_height="232dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorPrimary"
+        />
+
+    <TextView
+        android:id="@+id/tv_hello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_main"
+        android:textAlignment="center"
+        android:textSize="48sp"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/v_header"
+        />
+
+    <TextView
+        android:id="@+id/tv_whats_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/whats_new"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        android:textColor="@android:color/white"
+        android:paddingBottom="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_hello"
+        app:layout_constraintBottom_toBottomOf="@id/v_header"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/layout_drink"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:dividerPadding="24dp"
+        android:orientation="horizontal"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        app:layout_constraintTop_toBottomOf="@id/v_header"
+        app:layout_constraintBottom_toTopOf="@id/layout_eat"
+        tools:layout_editor_absoluteX="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/ic_glass_of_water_64dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_drink_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                android:src="@drawable/ic_remove_black_64dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_drink_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                android:textAlignment="center"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iv_drink_minus"
+                app:layout_constraintRight_toLeftOf="@id/iv_drink_plus"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="0" />
+
+            <ImageView
+                android:id="@+id/iv_drink_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:src="@drawable/ic_add_black_64dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_drink_counter"
+                app:layout_constraintLeft_toLeftOf="@id/tv_drink_counter"
+                app:layout_constraintRight_toRightOf="@id/tv_drink_counter"
+                android:textSize="24sp"
+                android:text="@string/glasses"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_eat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/layout_drink"
+        app:layout_constraintBottom_toTopOf="@+id/layout_training"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:dividerPadding="24dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/ic_eat_64dp"
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_eat_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_remove_black_64dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"/>
+
+            <TextView
+                android:id="@+id/tv_eat_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text = "0"
+                app:layout_constraintLeft_toRightOf="@id/iv_eat_minus"
+                app:layout_constraintRight_toLeftOf="@id/iv_eat_plus"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textAlignment="center"
+                android:textSize="48sp"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_eat_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_black_64dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="36dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calories"
+                android:textSize="24sp"
+                app:layout_constraintLeft_toLeftOf="@id/tv_eat_counter"
+                app:layout_constraintRight_toRightOf="@id/tv_eat_counter"
+                app:layout_constraintTop_toBottomOf="@id/tv_eat_counter" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_training"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/layout_eat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:dividerPadding="24dp"
+        android:layout_marginBottom="64dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/ic_fitness_64dp"
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_training_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_remove_black_64dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"/>
+
+            <TextView
+                android:id="@+id/tv_training_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text = "0"
+                app:layout_constraintLeft_toRightOf="@id/iv_training_minus"
+                app:layout_constraintRight_toLeftOf="@id/iv_training_plus"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textAlignment="center"
+                android:textSize="48sp"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_training_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_black_64dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="36dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_training_counter"
+                app:layout_constraintLeft_toLeftOf="@id/tv_training_counter"
+                app:layout_constraintRight_toRightOf="@id/tv_training_counter"
+                android:textSize="24sp"
+                android:text="@string/minutes"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
