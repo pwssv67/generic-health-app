@@ -11,16 +11,18 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import org.w3c.dom.Text
 import ru.pwssv67.healthcounter.App
 import ru.pwssv67.healthcounter.Extensions.hideKeyboard
 import ru.pwssv67.healthcounter.Extensions.showKeyboard
 import ru.pwssv67.healthcounter.R
 
-class AddDialog(val isFood:Boolean = true):DialogFragment() {
+class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragment() {
 
     lateinit var addButton: Button
     lateinit var input: EditText
     lateinit var caption: TextView
+    lateinit var headerCaption: TextView
 
     lateinit var mListener: AddDialogListener
 
@@ -39,7 +41,7 @@ class AddDialog(val isFood:Boolean = true):DialogFragment() {
         //inputCalories = et_calories_counter
     }
     public interface AddDialogListener{
-        public fun onDialogAddClick(dialog:DialogFragment, counter:Int, isFood: Boolean)
+        public fun onDialogAddClick(dialog:DialogFragment, counter:Int, isFood: Boolean, isAdd: Boolean)
 
     }
 
@@ -52,15 +54,19 @@ class AddDialog(val isFood:Boolean = true):DialogFragment() {
         builder.setView(view)
         addButton = view.findViewById(R.id.iv_add_food) as Button
         addButton.setOnClickListener {
-            mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood)
+            mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood, isAdd)
         }
         caption = view.findViewById(R.id.tv_add_food_calories) as TextView
         if (!isFood){
-            caption.text = getString(R.string.minutes)
+            caption.text = getText(R.string.minutes)
+        }
+        headerCaption = view.findViewById(R.id.header_caption) as TextView
+        if (!isAdd) {
+            headerCaption.text = getText(R.string.how_much_subtract)
         }
         input.setOnKeyListener{ view: View, i: Int, keyEvent: KeyEvent ->
             if (keyEvent.action == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
-                mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood)
+                mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood, isAdd)
                 true
             } else {
                 false

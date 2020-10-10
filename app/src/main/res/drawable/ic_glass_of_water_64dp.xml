@@ -12,7 +12,7 @@
     <path
         android:pathData="M53.53 2.79L52.88 9 51.81 19.31 51.39 23.3 47.39 61.79 17.15 61.79 13.14 23.3 12.73 19.31 11.65 9 11 2.79"
         android:strokeColor="#212121"
-        android:strokeWidth="4"
+        android:strokeWidth="5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:strokeMiterLimit="10" />

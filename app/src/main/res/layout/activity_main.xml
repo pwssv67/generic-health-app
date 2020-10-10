@@ -2,51 +2,53 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/layout_main">
+    android:background="#FFFFFF"
+    android:elevation="0dp"
+    tools:context=".MainActivity">
 
     <View
         android:id="@+id/v_header"
         android:layout_width="match_parent"
         android:layout_height="232dp"
+        android:background="@drawable/header_background"
+        android:elevation="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorPrimary"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_hello"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="@string/hello_main"
         android:textAlignment="center"
+        android:textColor="@color/backgroundColor"
         android:textSize="48sp"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="32dp"
+        android:elevation="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/v_header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/v_header"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_whats_new"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:paddingBottom="24dp"
         android:text="@string/whats_new"
         android:textAlignment="center"
+        android:textColor="@color/backgroundColor"
+        android:elevation="16dp"
         android:textSize="32sp"
-        android:textColor="@android:color/white"
-        android:paddingBottom="24dp"
-        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="@id/v_header"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_hello"
-        app:layout_constraintBottom_toBottomOf="@id/v_header"
-        />
+        app:layout_constraintTop_toTopOf="@id/tv_hello" />
 
 
     <LinearLayout
@@ -54,16 +56,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:dividerPadding="24dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/snippet_background"
+        android:elevation="@dimen/default_elevation"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingVertical="24dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        app:layout_constraintTop_toBottomOf="@id/v_header"
+
         app:layout_constraintBottom_toTopOf="@id/layout_eat"
-        tools:layout_editor_absoluteX="16dp"
-        android:gravity="center_vertical">
+        app:layout_constraintTop_toBottomOf="@id/v_header">
 
         <ImageView
+            android:id="@+id/iv_drink_image"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginRight="24dp"
@@ -80,7 +87,7 @@
                 android:layout_marginLeft="36dp"
                 android:layout_marginRight="36dp"
                 android:src="@drawable/ic_remove_black_64dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_drink_counter"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,10 +99,11 @@
                 android:layout_marginRight="36dp"
                 android:textAlignment="center"
                 android:textSize="48sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_glasses"
                 app:layout_constraintLeft_toRightOf="@id/iv_drink_minus"
                 app:layout_constraintRight_toLeftOf="@id/iv_drink_plus"
                 app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/secondaryText"
                 tools:text="0" />
 
             <ImageView
@@ -104,19 +112,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="36dp"
                 android:src="@drawable/ic_add_black_64dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_drink_counter"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tv_glasses"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tv_drink_counter"
+                android:text="@string/glasses"
+                android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="@id/tv_drink_counter"
                 app:layout_constraintRight_toRightOf="@id/tv_drink_counter"
-                android:textSize="24sp"
-                android:text="@string/glasses"
-                />
+                app:layout_constraintTop_toBottomOf="@id/tv_drink_counter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textColor="@color/secondaryText"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -127,20 +137,27 @@
         android:id="@+id/layout_eat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layout_drink"
-        app:layout_constraintBottom_toTopOf="@+id/layout_training"
-        android:orientation="horizontal"
+        android:layout_marginVertical="4dp"
+        android:background="@drawable/snippet_background"
+        android:elevation="@dimen/default_elevation"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:dividerPadding="24dp">
+        android:paddingVertical="24dp"
+
+
+        app:layout_constraintBottom_toTopOf="@+id/layout_training"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_drink">
 
         <ImageView
+            android:id="@+id/iv_eat_image"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginRight="24dp"
-            android:src="@drawable/ic_eat_64dp"
-            />
+            android:src="@drawable/ic_eat_64dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -150,72 +167,76 @@
                 android:id="@+id/iv_eat_minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_remove_black_64dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginLeft="36dp"
-                android:layout_marginRight="36dp"/>
+                android:layout_marginRight="36dp"
+                android:src="@drawable/ic_remove_black_64dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_eat_counter"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_eat_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text = "0"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                android:textAlignment="center"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toTopOf="@id/tv_calories"
                 app:layout_constraintLeft_toRightOf="@id/iv_eat_minus"
                 app:layout_constraintRight_toLeftOf="@id/iv_eat_plus"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textAlignment="center"
-                android:textSize="48sp"
-                android:layout_marginLeft="36dp"
-                android:layout_marginRight="36dp"
-                />
+                tools:text="0" />
 
             <ImageView
                 android:id="@+id/iv_eat_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
                 android:src="@drawable/ic_add_black_64dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_eat_counter"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginLeft="36dp" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tv_calories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/calories"
-                android:textSize="24sp"
+                android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="@id/tv_eat_counter"
                 app:layout_constraintRight_toRightOf="@id/tv_eat_counter"
-                app:layout_constraintTop_toBottomOf="@id/tv_eat_counter" />
+                app:layout_constraintTop_toBottomOf="@id/tv_eat_counter"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/layout_training"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layout_eat"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
 
+        android:background="@drawable/snippet_background"
+        android:elevation="@dimen/default_elevation"
+
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="24dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:dividerPadding="24dp"
-        android:layout_marginBottom="64dp">
+        android:layout_marginTop="8dp"
+
+
+        app:layout_constraintTop_toBottomOf="@id/layout_eat">
 
         <ImageView
+            android:id="@+id/iv_training_image"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginRight="24dp"
-            android:src="@drawable/ic_fitness_64dp"
-            />
+            android:src="@drawable/ic_fitness_64dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -225,50 +246,65 @@
                 android:id="@+id/iv_training_minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_remove_black_64dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginLeft="36dp"
-                android:layout_marginRight="36dp"/>
+                android:layout_marginRight="36dp"
+                android:src="@drawable/ic_remove_black_64dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_training_counter"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_training_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text = "0"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"
+                android:textAlignment="center"
+                android:textSize="48sp"
+                app:layout_constraintBottom_toTopOf="@id/tv_training"
                 app:layout_constraintLeft_toRightOf="@id/iv_training_minus"
                 app:layout_constraintRight_toLeftOf="@id/iv_training_plus"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textAlignment="center"
-                android:textSize="48sp"
-                android:layout_marginLeft="36dp"
-                android:layout_marginRight="36dp"
-                />
+                tools:text="0" />
 
             <ImageView
                 android:id="@+id/iv_training_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
                 android:src="@drawable/ic_add_black_64dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_training_counter"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginLeft="36dp" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tv_training"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tv_training_counter"
+                android:text="@string/minutes"
+                android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="@id/tv_training_counter"
                 app:layout_constraintRight_toRightOf="@id/tv_training_counter"
-                android:textSize="24sp"
-                android:text="@string/minutes"
-                />
+                app:layout_constraintTop_toBottomOf="@id/tv_training_counter"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_training"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/default_button_background"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp"
+        android:textSize="20sp"
+        android:textColor="@color/backgroundColor"
+        android:text="@string/see_history"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

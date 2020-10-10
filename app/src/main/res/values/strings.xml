@@ -8,4 +8,7 @@
     <string name="add">Добавить</string>
     <string name="how_much_add">Сколько добавить?</string>
     <string name="d">\@strings/minutes</string>
+    <string name="how_much_subtract">Сколько убрать?</string>
+    <string name="see_history">Посмотреть историю</string>
+    <string name="your_history">Твоя история</string>
 </resources>
