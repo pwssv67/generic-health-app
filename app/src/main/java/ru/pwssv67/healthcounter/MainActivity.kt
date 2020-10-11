@@ -2,6 +2,7 @@ package ru.pwssv67.healthcounter
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.widget.TextView
 import androidx.core.util.rangeTo
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import org.w3c.dom.Text
@@ -43,19 +45,28 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     lateinit var caloriesLayout: LinearLayout
     lateinit var caloriesCaption: TextView
     lateinit var eatImage: ImageView
+    lateinit var showHistory: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initViewModel()
         bindViews()
+        initViewModel()
         loadData()
     }
 
     private fun initViewModel() {
-        viewModel = DayViewModel()
+        viewModel = DayViewModel(application)
             //ViewModelProvider(this, )
-        viewModel.getDayStatsData().observe(this, Observer {day = it})
+        viewModel.getDayStatsData().observe(this, Observer {
+            if (it == null) {day = DayStats(0,0,0)}
+            else {
+                day = it
+                drinkCounterView.text = "${day.glasses}"
+                eatCounterView.text = "${day.calories}"
+                trainingCounterView.text = "${day.training}"
+            }
+        })
     }
 
     private fun loadData() {
@@ -102,6 +113,8 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         caloriesLayout = layout_eat
         caloriesCaption = tv_calories
         eatImage = iv_eat_image
+        showHistory = tv_show_history
+
 
 
 
@@ -146,10 +159,16 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             viewTraining()
         }
 
+        showHistory.setOnClickListener {
+
+
+        }
+
     }
 
     private fun viewTraining() {
         Snackbar.make(layout_main, "Скоро будет вкусно, а пока ремонт", Snackbar.LENGTH_LONG).show()
+        viewModel.getDayStatsData()
     }
 
     private fun viewEat() {
@@ -249,6 +268,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun goalReachedGlasses() {
+        if (day.glasses!=8) {
+            return
+        }
         val colorFrom = getColor(R.color.backgroundColor)
         val colorTo = getColor(R.color.successColor)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
@@ -309,8 +331,8 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun goalReachedCalories() {
-        var colorFrom = getColor(R.color.backgroundColor)
-        var colorTo = getColor(R.color.backgroundColor)
+        var colorFrom: Int
+        var colorTo: Int
         when (day.calories) {
                 in 1500..2500 -> {
                     colorFrom = getColor(R.color.backgroundColor)

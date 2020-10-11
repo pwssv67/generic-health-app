@@ -1,62 +1,38 @@
 package ru.pwssv67.healthcounter
 
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import android.util.Log
+import androidx.lifecycle.LiveData
+import ru.pwssv67.healthcounter.Database.DayStatsDao
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import java.time.LocalDate
-import java.util.*
+import java.util.concurrent.Executor
 
-object Repository {
-    private const val GLASSES = "GLASSES"
-    private const val CALORIES = "CALORIES"
-    private const val TRAINING = "TRAINING"
-    private const val DATE = "DATE"
+class DayStatsRepository (val dao:DayStatsDao) {
+    val dayStatsData:LiveData<DayStats> = dao.load(LocalDate.now().toString())
+    private val executor = Executor { Thread(it).start() }
 
+    init{
 
-    private val prefs: SharedPreferences by lazy {
-        val ctx = App.applicationContext()
-        PreferenceManager.getDefaultSharedPreferences(ctx)
+    }
+    suspend fun saveDayStats(dayStats: DayStats) {
+       dao.save(dayStats)
+        Log.e("rgr", "fefegehewgdsg ${dayStats.day} ${dayStats.glasses}")
     }
 
-    fun saveDayStats(dayStats: DayStats) {
-        with (dayStats) {
-            putValue(GLASSES to glasses)
-            putValue(CALORIES to calories)
-            putValue(TRAINING to training)
-            putValue(DATE to LocalDate.now().toString() )
+    /*
+
+    suspend fun getDayStats(day: String = LocalDate.now().toString()): DayStats? {
+        val data =dao.load()
+        Log.e("rgr", "get ${data}")
+        if (data.isNullOrEmpty()) {
+            val temp = DayStats(0,0,0)
+            saveDayStats(temp)
+            return temp
         }
+        Log.e("rgr", "get ${data[0].day} ${data[0].glasses}")
+        return data[0]
     }
 
-    fun getDayStats(): DayStats {
-        val date = prefs.getString(DATE, "1997-01-01")
-        if (LocalDate.parse(date) == LocalDate.now()) {
-            return DayStats(
-                prefs.getInt(GLASSES, 0),
-                prefs.getInt(CALORIES, 0),
-                prefs.getInt(TRAINING, 0)
-            )
-        }
-        else {
-            return DayStats(
-                0,
-                0,
-                0
-            )
-        }
-    }
+     */
 
-    private fun putValue(pair: Pair<String,Any>) = with(prefs.edit()) {
-        val key = pair.first
-        val value = pair.second
-
-        when (value) {
-            is String -> putString(key,value)
-            is Int -> putInt(key,value)
-            is Boolean -> putBoolean(key,value)
-            is Long -> putLong (key,value)
-            is Float -> putFloat (key,value)
-            else -> error("Only primitive data types can be stored in Shared Preferences")
-        }
-        apply()
-    }
 }
