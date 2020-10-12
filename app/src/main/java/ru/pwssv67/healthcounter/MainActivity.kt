@@ -2,6 +2,7 @@ package ru.pwssv67.healthcounter
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.content.Intent
 import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
@@ -58,6 +59,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         loadData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        goalCalories = 0
+        updateUIColors()
+    }
+
     private fun initViewModel() {
         viewModel = DayViewModel(application)
             //ViewModelProvider(this, )
@@ -91,15 +98,10 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             goalReachedGlasses()
             isGoalReachedDrink = true
         }
-        if (day.calories >= 1500) {
-            if (day.calories >= 2500) {
-                goalCalories = 3
-            } else {
-                goalCalories = 2
-            }
+
 
             goalReachedCalories()
-
+            /*
             val buttonColorAnimation = ValueAnimator.ofObject(
                 ArgbEvaluator(),
                 getColor(R.color.secondaryText),
@@ -111,6 +113,15 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 eatMinus.drawable.setTint(animation.animatedValue as Int)
             })
             buttonColorAnimation.start()
+
+             */
+
+        if (day.calories >= 1500) {
+            if (day.calories >= 2500) {
+                goalCalories = 3
+            } else {
+                goalCalories = 2
+            }
         }
         if (day.training >= 30) {
             goalReachedTraining()
@@ -184,8 +195,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         showHistory.setOnClickListener {
-
-
+            val intent = Intent(applicationContext, NotMainActivity::class.java)
+            startActivity(intent)
+            imageTraining.drawable.setTint(resources.getColor(R.color.primaryText))
+            imageDrink.drawable.setTint(resources.getColor(R.color.primaryText))
+            eatImage.drawable.setTint(resources.getColor(R.color.primaryText))
+            caloriesLayout.background.setTint(resources.getColor(R.color.backgroundColor))
         }
 
     }

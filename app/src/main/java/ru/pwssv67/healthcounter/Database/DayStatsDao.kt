@@ -16,6 +16,12 @@ interface DayStatsDao {
     @Query ("SELECT * FROM daystats WHERE day=:day")
     fun load(day:String): LiveData<DayStats>
 
+    @Query("SELECT * FROM daystats")
+    fun loadAll():LiveData<List<DayStats>>
+
     @Query("DELETE FROM daystats")
     suspend fun deleteAll()
+
+    @Query ("DELETE FROM daystats WHERE day=:day")
+    suspend fun delete(day:String)
 }

@@ -17,6 +17,7 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
     init {
         val dayStatsDao = DayStatsDatabase.getDatabase(App.applicationContext(), viewModelScope).dayStatsDao()
         repository = DayStatsRepository(dayStatsDao)
+        DayStatsDatabase.Repository = repository
         dayStatsData.value = repository.dayStatsData.value
         val dataObserver = Observer<DayStats> {
             if (it != null) {
@@ -29,6 +30,14 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
             delay(1000)
             checkIfRecordExists()
         }
+
+        val tempObserver = Observer<List<DayStats>> {
+            if (it!=null) {
+                Log.e("", it[0].day)
+            }
+
+        }
+        repository.allDayStats.observeForever(tempObserver)
     }
 
     fun getDayStatsData(): MutableLiveData<DayStats> {

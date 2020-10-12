@@ -9,6 +9,7 @@ import java.util.concurrent.Executor
 
 class DayStatsRepository (val dao:DayStatsDao) {
     val dayStatsData:LiveData<DayStats> = dao.load(LocalDate.now().toString())
+    val allDayStats = dao.loadAll()
     private val executor = Executor { Thread(it).start() }
 
     init{
@@ -17,6 +18,12 @@ class DayStatsRepository (val dao:DayStatsDao) {
     suspend fun saveDayStats(dayStats: DayStats) {
        dao.save(dayStats)
         Log.e("rgr", "fefegehewgdsg ${dayStats.day} ${dayStats.glasses}")
+    }
+
+    fun loadAll():LiveData<List<DayStats>> {
+        val data = dao.loadAll()
+        Log.e("rgrgrggr", "fff")
+        return data
     }
 
     /*

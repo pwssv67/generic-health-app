@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.pwssv67.healthcounter.DayStatsRepository
 import ru.pwssv67.healthcounter.Extensions.DayStats
 
 @Database(entities = [DayStats::class], version = 1)
@@ -23,7 +24,8 @@ abstract class DayStatsDatabase : RoomDatabase() {
             INSTANCE?.let { database ->
                 scope.launch {
                     val dayStatsDao = database.dayStatsDao()
-                    dayStatsDao.save(DayStats(1,1,1,"11-10-2020"))
+                    dayStatsDao.delete("1997-12-12")
+                    dayStatsDao.delete("11-10-2020")
                 }
             }
         }
@@ -42,6 +44,8 @@ abstract class DayStatsDatabase : RoomDatabase() {
                         "PRIMARY KEY(`day`))")
             }
         }
+
+        public var Repository:DayStatsRepository? = null
 
         fun getDatabase(
             context: Context,

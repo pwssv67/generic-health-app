@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <View
         android:id="@+id/header"
@@ -24,6 +25,20 @@
         android:text="@string/your_history"
         android:textSize="48sp"
         android:textColor="@color/backgroundColor"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        android:layout_marginTop="32dp"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+        android:orientation="horizontal"
+        android:layoutDirection="rtl"
+        android:padding="16dp"
+        tools:listitem="@layout/history_fragment"
+        tools:itemCount="5"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
