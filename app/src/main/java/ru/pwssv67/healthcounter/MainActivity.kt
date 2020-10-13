@@ -3,10 +3,16 @@ package ru.pwssv67.healthcounter
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.ShapeDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.OvershootInterpolator
+import android.widget.Filter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -48,6 +54,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     var isGoalReachedTraining = false
     var goalCalories = 0
     lateinit var profile: Profile
+    val ANIMATION_LONG:Long = 1000
+    val ANIMATION_SHORT:Long = 375
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +64,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         bindViews()
         initViewModel()
         loadData()
+
     }
 
     override fun onResume() {
         super.onResume()
-        goalCalories = 0
+        profile = viewModel.getProfile()
         updateUIColors()
     }
 
@@ -93,13 +103,22 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun updateUIColors() {
+
+        if (isGoalReachedDrink && day.glasses<profile.drink_goal) {
+            goalUnreachedGlasses()
+            isGoalReachedDrink = false
+        }
+
         if (day.glasses >= profile.drink_goal) {
             goalReachedGlasses()
             isGoalReachedDrink = true
         }
 
-
+        if (day.calories < profile.eat_goal_second && goalCalories == 2 || day.calories< profile.eat_goal_first && goalCalories == 1) {
+            goalUnreachedCalories()
+        } else {
             goalReachedCalories()
+        }
             /*
             val buttonColorAnimation = ValueAnimator.ofObject(
                 ArgbEvaluator(),
@@ -121,6 +140,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             } else {
                 goalCalories = 2
             }
+        }
+
+        if (day.training<profile.training_goal && isGoalReachedTraining) {
+            goalUnreachedTraining()
+            isGoalReachedTraining = false
         }
         if (day.training >= profile.training_goal) {
             goalReachedTraining()
@@ -230,10 +254,13 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun minusDrink() {
-        if (day.glasses>=1) { day.glasses-- }
+        if (day.glasses>=1) { day.glasses--}
         drinkCounterView.text = "${day.glasses}"
         viewModel.saveDayStatsData(day)
-        showKeyboard(iv_drink_minus)
+        if (day.glasses < profile.drink_goal && isGoalReachedDrink) {
+            goalUnreachedGlasses()
+            isGoalReachedDrink = false
+        }
     }
 
     private fun addTraining() {
@@ -255,7 +282,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         day.glasses++
         drinkCounterView.text = "${day.glasses}"
         viewModel.saveDayStatsData(day)
-        if (day.glasses>=8 && !isGoalReachedDrink) {
+        if (day.glasses>=profile.drink_goal && !isGoalReachedDrink) {
             isGoalReachedDrink = true
             goalReached(Goal.GLASSES.goalType)
         }
@@ -266,6 +293,16 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         if (isFood){
             if (isAdd) {
                 day.calories += counter
+                if (day.calories in (profile.eat_goal_first)..(profile.eat_goal_second) ||
+                    day.calories>=profile.eat_goal_second && day.calories-counter<=profile.eat_goal_second && isAdd ||
+                    day.calories < profile.eat_goal_first && !isAdd && day.calories + counter>profile.eat_goal_first ) {
+                    goalReached(Goal.CALORIES.goalType)
+                    goalCalories = when (day.calories) {
+                        in 0..profile.eat_goal_first -> 0
+                        in (profile.eat_goal_first)..(profile.eat_goal_second) -> 1
+                        else -> 2
+                    }
+                }
             }
             else {
                 if (day.calories > counter) {
@@ -274,19 +311,18 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 else {
                     day.calories = 0
                 }
-            }
-            eatCounterView.text = "${day.calories}"
-            if (day.calories in (profile.eat_goal_first)..(profile.eat_goal_second) ||
-                day.calories>=profile.eat_goal_second && day.calories-counter<=profile.eat_goal_second && isAdd ||
-                day.calories < profile.eat_goal_first && !isAdd && day.calories + counter>profile.eat_goal_first )
-            {
-                goalReached(Goal.CALORIES.goalType)
-                goalCalories = when (day.calories) {
-                    in 0..profile.eat_goal_first -> 0
-                    in (profile.eat_goal_first)..(profile.eat_goal_second) -> 1
-                    else -> 2
+
+                if (day.calories < profile.eat_goal_second && goalCalories == 2 || day.calories< profile.eat_goal_first && goalCalories == 1) {
+                    Log.e("rgre", "cal")
+                    goalUnreachedCalories()
+                    goalCalories = when (day.calories) {
+                        in 0..profile.eat_goal_first -> 0
+                        in (profile.eat_goal_first)..(profile.eat_goal_second) -> 1
+                        else -> 2
+                    }
                 }
             }
+            eatCounterView.text = "${day.calories}"
         } else {
             if (isAdd) {
                 day.training += counter
@@ -298,9 +334,13 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 else {
                     day.training = 0
                 }
+                if (day.training<profile.training_goal && isGoalReachedTraining) {
+                    goalUnreachedTraining()
+                    isGoalReachedTraining = false
+                }
             }
             trainingCounterView.text = "${day.training}"
-            if (day.training >= profile.training_goal) {
+            if (day.training >= profile.training_goal && isAdd) {
                 isGoalReachedTraining = true
                 goalReached(Goal.TRAINING.goalType)
             }
@@ -322,7 +362,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorTo = getColor(R.color.successColor)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         val background = drinkLayout.background as Drawable
-        colorAnimation.duration = 1000
+        colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
@@ -341,25 +381,26 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val addImage = drinkAdd.drawable
         val minusImage = drinkMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = 500
+        textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             drinkCounterView.setTextColor(animation?.animatedValue as Int)
             drinkCaption.setTextColor(animation.animatedValue as Int)
-            image.setTint(animation.animatedValue as Int)
+            //image.setTint(animation.animatedValue as Int)
             addImage.setTint(animation.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
         })
 
-        val scale = imageDrink.scaleX
+        val scale = 1.0.toFloat()
+        Log.e("", "$scale")
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
-        scaleAnimation.duration = 500
+        scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageDrink.scaleX = animation?.animatedValue as Float
             imageDrink.scaleY = animation.animatedValue as Float
         })
 
         val rotateAnimation = ValueAnimator.ofInt(0, 720)
-        rotateAnimation.duration = 1000
+        rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
@@ -382,7 +423,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         var colorTo: Int
         when (day.calories) {
                 in (profile.eat_goal_first)..(profile.eat_goal_second) -> {
-                    if (goalCalories == 2) return
+                    if (goalCalories == 1) return
                     colorFrom = getColor(R.color.backgroundColor)
                     colorTo = getColor(R.color.warningColor)
                 }
@@ -390,7 +431,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                     return
                 }
                 else -> {
-                    if (goalCalories==3) return
+                    if (goalCalories==2) return
                     colorFrom = getColor(R.color.warningColor)
                     colorTo = getColor(R.color.dangerColor)
 
@@ -398,7 +439,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         val background = caloriesLayout.background as Drawable
-        colorAnimation.duration = 1000
+        colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
@@ -409,7 +450,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val addImage = eatAdd.drawable
         val minusImage = eatMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = 1000
+        textColorAnimation.duration = ANIMATION_LONG
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             eatCounterView.setTextColor(animation?.animatedValue as Int)
             caloriesCaption.setTextColor(animation.animatedValue as Int)
@@ -417,7 +458,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         })
 
         val buttonColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        buttonColorAnimation.duration = 1000
+        buttonColorAnimation.duration = ANIMATION_LONG
         buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
@@ -434,7 +475,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         val background = trainingLayout.background as Drawable
 
-        colorAnimation.duration = 1000
+        colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
@@ -450,7 +491,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val textColorFrom = getColor(R.color.secondaryText)
         val textColorTo = getColor(R.color.backgroundColor)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = 1000
+        textColorAnimation.duration = ANIMATION_LONG
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation.animatedValue as Int)
@@ -461,14 +502,14 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         val scale = imageTraining.scaleX
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
-        scaleAnimation.duration = 500
+        scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.scaleX = animation?.animatedValue as Float
             imageTraining.scaleY = animation.animatedValue as Float
         })
 
         val rotateAnimation = ValueAnimator.ofInt(0, 720)
-        rotateAnimation.duration = 1000
+        rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
@@ -486,6 +527,185 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         //trainingMinus.isClickable = false
     }
 
+    private fun goalUnreachedGlasses() {
+        val colorFrom = getColor(R.color.successColor)
+        val colorTo = getColor(R.color.backgroundColor)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        val background = drinkLayout.background as Drawable
+        colorAnimation.duration = ANIMATION_LONG
+        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            background.setTint(animation?.animatedValue as Int)
+        })
+
+        val image = getDrawable(R.drawable.ic_glass_of_water_64dp)
+
+        val textColorFrom = getColor(R.color.backgroundColor)
+        val textColorTo = getColor(R.color.secondaryText)
+        val addImage = drinkAdd.drawable
+        val minusImage = drinkMinus.drawable
+        val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+        textColorAnimation.duration = ANIMATION_SHORT
+        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            drinkCounterView.setTextColor(animation?.animatedValue as Int)
+            drinkCaption.setTextColor(animation.animatedValue as Int)
+            image?.setTint(animation.animatedValue as Int)
+            //addImage.setTint(animation.animatedValue as Int)
+            minusImage.setTint(animation.animatedValue as Int)
+        })
+
+        val minusColorTo = getColor(R.color.colorAccent)
+        val minusColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, minusColorTo)
+        minusColorAnimation.duration = ANIMATION_SHORT
+        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            addImage.setTint(animation?.animatedValue as Int)
+        })
+
+        val scale = 1.0.toFloat()
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        scaleAnimation.duration = ANIMATION_SHORT
+        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            imageDrink.scaleX = animation?.animatedValue as Float
+            imageDrink.scaleY = animation.animatedValue as Float
+        })
+
+        val rotateAnimation = ValueAnimator.ofInt(0, -720)
+        rotateAnimation.duration = ANIMATION_LONG
+        rotateAnimation.interpolator = OvershootInterpolator()
+        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
+            if (animation.animatedValue as Int <= -360) {
+                imageDrink.setImageResource(R.drawable.ic_glass_of_water_64dp)
+            }
+        })
+
+        colorAnimation.start()
+        textColorAnimation.start()
+        minusColorAnimation.start()
+        rotateAnimation.start()
+        scaleAnimation.start()
+        //drinkAdd.isClickable = false
+        //drinkMinus.isClickable = false
+    }
+
+    private fun goalUnreachedTraining() {
+        val colorFrom = getColor(R.color.successColor)
+        val colorTo = getColor(R.color.backgroundColor)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        val background = trainingLayout.background as Drawable
+
+        colorAnimation.duration = ANIMATION_LONG
+        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            background.setTint(animation?.animatedValue as Int)
+        })
+
+        val textColorFrom = getColor(R.color.backgroundColor)
+        val textColorTo = getColor(R.color.secondaryText)
+        val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+        textColorAnimation.duration = ANIMATION_LONG
+        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            //trainingAdd.drawable.setTint(animation?.animatedValue as Int)
+            trainingMinus.drawable.setTint(animation?.animatedValue as Int)
+            trainingCounterView.setTextColor(animation.animatedValue as Int)
+            trainingCaption.setTextColor(animation.animatedValue as Int)
+        })
+
+        val addColorTo = getColor(R.color.colorAccent)
+        val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
+        addColorAnimation.duration = ANIMATION_LONG
+        addColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            trainingAdd.drawable.setTint(animation?.animatedValue as Int)
+        })
+
+        val scale = imageTraining.scaleX
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        scaleAnimation.duration = ANIMATION_SHORT
+        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            imageTraining.scaleX = animation?.animatedValue as Float
+            imageTraining.scaleY = animation.animatedValue as Float
+        })
+
+        val rotateAnimation = ValueAnimator.ofInt(0, -720)
+        rotateAnimation.duration = ANIMATION_LONG
+        rotateAnimation.interpolator = OvershootInterpolator()
+        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
+            if (animation.animatedValue as Int <= -360) {
+                imageTraining.setImageResource(R.drawable.ic_fitness_64dp)
+            }
+        })
+
+        colorAnimation.start()
+        textColorAnimation.start()
+        addColorAnimation.start()
+        scaleAnimation.start()
+        rotateAnimation.start()
+    }
+
+    private fun goalUnreachedCalories() {
+        var colorFrom: Int
+        var colorTo: Int
+        when (day.calories) {
+            in (profile.eat_goal_first)..(profile.eat_goal_second) -> {
+                if (goalCalories == 1) return
+                colorFrom = getColor(R.color.dangerColor)
+                colorTo = getColor(R.color.warningColor)
+            }
+            in 0..profile.eat_goal_first -> {
+                if (goalCalories == 0) return
+                colorFrom = getColor(R.color.warningColor)
+                colorTo = getColor(R.color.backgroundColor)
+            }
+            else -> {
+                return
+            }
+        }
+
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        val background = caloriesLayout.background as Drawable
+        colorAnimation.duration = ANIMATION_LONG
+        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            background.setTint(animation?.animatedValue as Int)
+        })
+
+        val changeImageColor = day.calories in 0..profile.eat_goal_first && goalCalories == 1
+        if (changeImageColor) {
+
+            val textColorFrom = getColor(R.color.backgroundColor)
+            val textColorTo = getColor(R.color.secondaryText)
+            val addImage = eatAdd.drawable
+            val minusImage = eatMinus.drawable
+            val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+            textColorAnimation.duration = ANIMATION_LONG
+
+            textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+                eatCounterView.setTextColor(animation?.animatedValue as Int)
+                caloriesCaption.setTextColor(animation.animatedValue as Int)
+                eatImage.drawable.setTint(animation.animatedValue as Int)
+            })
+
+            val buttonColorAnimation =
+                ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+            buttonColorAnimation.duration = ANIMATION_LONG
+            buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+                //addImage.setTint(animation?.animatedValue as Int)
+                minusImage.setTint(animation?.animatedValue as Int)
+            })
+
+            val addColorTo = getColor(R.color.colorAccent)
+            val addButtonColorAnimation =
+                ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
+            addButtonColorAnimation.duration = ANIMATION_LONG
+            addButtonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+                addImage.setTint(animation?.animatedValue as Int)
+            })
+
+            textColorAnimation.start()
+            buttonColorAnimation.start()
+            addButtonColorAnimation.start()
+
+        }
+        colorAnimation.start()
+    }
 }
 
 
