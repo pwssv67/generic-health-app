@@ -13,7 +13,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:text = "Ad tgthhtht ththth ththr"
-        android:background="@drawable/snippet_background"
+        android:background="@drawable/mainscreen_snippet_background"
         android:textSize="32sp"
         android:padding="8dp"
         android:elevation="10dp"

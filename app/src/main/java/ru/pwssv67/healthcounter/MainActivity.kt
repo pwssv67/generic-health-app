@@ -3,22 +3,17 @@ package ru.pwssv67.healthcounter
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
-import android.graphics.ColorSpace
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.renderscript.Sampler
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.util.rangeTo
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import org.w3c.dom.Text
 import ru.pwssv67.healthcounter.Dialogs.AddDialog
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Goal
@@ -195,12 +190,8 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         showHistory.setOnClickListener {
-            val intent = Intent(applicationContext, NotMainActivity::class.java)
+            val intent = Intent(applicationContext, HistoryActivity::class.java)
             startActivity(intent)
-            imageTraining.drawable.setTint(resources.getColor(R.color.primaryText))
-            imageDrink.drawable.setTint(resources.getColor(R.color.primaryText))
-            eatImage.drawable.setTint(resources.getColor(R.color.primaryText))
-            caloriesLayout.background.setTint(resources.getColor(R.color.backgroundColor))
         }
 
     }

@@ -8,12 +8,20 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.R
 
-class HistoryAdapter(val days:List<DayStats>):RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+class HistoryAdapter:RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+    var days: List<DayStats> = listOf()
+
     override fun onBindViewHolder(holder: HistoryAdapter.ViewHolder, position: Int) {
-        holder.date.text = days[position].day
-        holder.drinkCounter.text = days[position].glasses.toString()
-        holder.eatCounter.text = days[position].calories.toString()
-        holder.trainingCounter.text = days[position].training.toString()
+        val pos = days.size - 1 - position
+        holder.date.text = days[pos].day
+        holder.drinkCounter.text = days[pos].glasses.toString()
+        holder.eatCounter.text = days[pos].calories.toString()
+        holder.trainingCounter.text = days[pos].training.toString()
+    }
+
+    public fun updateData(data:List<DayStats>) {
+        days = data
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = days.size
