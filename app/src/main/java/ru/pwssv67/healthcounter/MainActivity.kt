@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import ru.pwssv67.healthcounter.Dialogs.AddDialog
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Goal
+import ru.pwssv67.healthcounter.Extensions.Profile
 import ru.pwssv67.healthcounter.Extensions.showKeyboard
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
     var goalCalories = 0
+    lateinit var profile: Profile
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +75,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 if (!isGoalReachedDrink && !isGoalReachedTraining && goalCalories == 0 ) updateUIColors()
             }
         })
+        profile = viewModel.getProfile()
     }
 
     private fun loadData() {
@@ -89,7 +92,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun updateUIColors() {
-        if (day.glasses >= 8) {
+        if (day.glasses >= profile.drink_goal) {
             goalReachedGlasses()
             isGoalReachedDrink = true
         }
@@ -111,14 +114,14 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
              */
 
-        if (day.calories >= 1500) {
-            if (day.calories >= 2500) {
+        if (day.calories >= profile.eat_goal_first) {
+            if (day.calories >= profile.eat_goal_second) {
                 goalCalories = 3
             } else {
                 goalCalories = 2
             }
         }
-        if (day.training >= 30) {
+        if (day.training >= profile.training_goal) {
             goalReachedTraining()
             isGoalReachedTraining = true
         }
@@ -266,11 +269,14 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 }
             }
             eatCounterView.text = "${day.calories}"
-            if (day.calories in 1500..2500 || day.calories>=2500 && day.calories-counter<=2500 && isAdd || day.calories < 1500 && !isAdd && day.calories + counter>1500 ){
+            if (day.calories in (profile.eat_goal_first)..(profile.eat_goal_second) ||
+                day.calories>=profile.eat_goal_second && day.calories-counter<=profile.eat_goal_second && isAdd ||
+                day.calories < profile.eat_goal_first && !isAdd && day.calories + counter>profile.eat_goal_first )
+            {
                 goalReached(Goal.CALORIES.goalType)
                 goalCalories = when (day.calories) {
-                    in 0..1500 -> 0
-                    in 1500..2500 -> 1
+                    in 0..profile.eat_goal_first -> 0
+                    in (profile.eat_goal_first)..(profile.eat_goal_second) -> 1
                     else -> 2
                 }
             }
@@ -287,7 +293,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 }
             }
             trainingCounterView.text = "${day.training}"
-            if (day.training >= 30) {
+            if (day.training >= profile.training_goal) {
                 isGoalReachedTraining = true
                 goalReached(Goal.TRAINING.goalType)
             }
@@ -368,12 +374,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         var colorFrom: Int
         var colorTo: Int
         when (day.calories) {
-                in 1500..2500 -> {
+                in (profile.eat_goal_first)..(profile.eat_goal_second) -> {
                     if (goalCalories == 2) return
                     colorFrom = getColor(R.color.backgroundColor)
                     colorTo = getColor(R.color.warningColor)
                 }
-                in 0..1500 -> {
+                in 0..profile.eat_goal_first -> {
                     return
                 }
                 else -> {

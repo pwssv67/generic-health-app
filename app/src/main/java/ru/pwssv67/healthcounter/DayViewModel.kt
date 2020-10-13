@@ -10,22 +10,24 @@ import ru.pwssv67.healthcounter.Extensions.DayStats
 import java.time.LocalDate
 
 class DayViewModel(application: Application): AndroidViewModel(application) {
-    private val repository:DayStatsRepository
+    private val dayStatsRepository:DayStatsRepository
+    private val preferencesRepository = PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
+
 
 
     init {
         val dayStatsDao = DayStatsDatabase.getDatabase(App.applicationContext(), viewModelScope).dayStatsDao()
-        repository = DayStatsRepository(dayStatsDao)
-        DayStatsDatabase.Repository = repository
-        dayStatsData.value = repository.dayStatsData.value
+        dayStatsRepository = DayStatsRepository(dayStatsDao)
+        DayStatsDatabase.Repository = dayStatsRepository
+        dayStatsData.value = dayStatsRepository.dayStatsData.value
         val dataObserver = Observer<DayStats> {
             if (it != null) {
                 dayStatsData.postValue(it)
                 Log.e("fef", "${it.glasses}")
             }
         }
-        repository.dayStatsData.observeForever(dataObserver)
+        dayStatsRepository.dayStatsData.observeForever(dataObserver)
         viewModelScope.launch {
             delay(1000)
             checkIfRecordExists()
@@ -37,12 +39,12 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
             }
 
         }
-        repository.allDayStats.observeForever(tempObserver)
+        dayStatsRepository.allDayStats.observeForever(tempObserver)
     }
 
     fun getDayStatsData(): MutableLiveData<DayStats> {
         viewModelScope.launch {
-            dayStatsData.postValue(repository.dayStatsData.value)
+            dayStatsData.postValue(dayStatsRepository.dayStatsData.value)
         }
 
         return dayStatsData
@@ -50,14 +52,16 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
 
     fun saveDayStatsData(dayStats: DayStats) {
         viewModelScope.launch {
-            repository.saveDayStats(dayStats)
+            dayStatsRepository.saveDayStats(dayStats)
         }
         //dayStatsData.value = dayStats
     }
 
+    fun getProfile() = preferencesRepository.getProfileData()
+
     private suspend fun checkIfRecordExists() {
-        if (repository.dayStatsData.value == null) {
-            repository.saveDayStats(DayStats(0,0,0, LocalDate.now().toString()))
+        if (dayStatsRepository.dayStatsData.value == null) {
+            dayStatsRepository.saveDayStats(DayStats(0,0,0, LocalDate.now().toString()))
         }
     }
 }

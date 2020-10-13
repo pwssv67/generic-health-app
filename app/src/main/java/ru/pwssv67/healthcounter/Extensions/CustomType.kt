@@ -13,3 +13,5 @@ enum class Goal(val goalType: String){
     CALORIES("CALORIES"),
     TRAINING("TRAINING")
 }
+
+class Profile(var name:String, var drink_goal:Int, var training_goal:Int, var eat_goal_first:Int, var eat_goal_second:Int)
