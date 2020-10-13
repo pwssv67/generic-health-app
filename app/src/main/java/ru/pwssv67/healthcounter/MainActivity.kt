@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     lateinit var caloriesCaption: TextView
     lateinit var eatImage: ImageView
     lateinit var showHistory: TextView
+    lateinit var settingsButton:ImageView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
     var goalCalories = 0
@@ -147,6 +148,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         caloriesCaption = tv_calories
         eatImage = iv_eat_image
         showHistory = tv_show_history
+        settingsButton = iv_settings
 
 
 
@@ -194,6 +196,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         showHistory.setOnClickListener {
             val intent = Intent(applicationContext, HistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        settingsButton.setOnClickListener {
+            val intent = Intent(applicationContext, ProfileActivity::class.java)
             startActivity(intent)
         }
 

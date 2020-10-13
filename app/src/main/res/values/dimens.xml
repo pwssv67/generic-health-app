@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="default_elevation">8dp</dimen>
+    <dimen name="text_header_main">48sp</dimen>
+    <dimen name="text_header_secondary">32sp</dimen>
+    <dimen name="main_counter_text">48sp</dimen>
+    <dimen name="main_button_text">24sp</dimen>
 </resources>

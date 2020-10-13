@@ -11,4 +11,7 @@
     <string name="how_much_subtract">Сколько убрать?</string>
     <string name="see_history">Посмотреть историю</string>
     <string name="your_history">Твоя история</string>
+    <string name="set_your_goals">Настрой свои цели</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
 </resources>

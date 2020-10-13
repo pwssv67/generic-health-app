@@ -7,12 +7,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.pwssv67.healthcounter.Database.DayStatsDatabase
 import ru.pwssv67.healthcounter.Extensions.DayStats
+import ru.pwssv67.healthcounter.Extensions.Profile
 import java.time.LocalDate
 
 class DayViewModel(application: Application): AndroidViewModel(application) {
     private val dayStatsRepository:DayStatsRepository
     private val preferencesRepository = PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
+
 
 
 
@@ -58,6 +60,10 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun getProfile() = preferencesRepository.getProfileData()
+
+    fun saveProfile(profile: Profile) {
+        preferencesRepository.saveProfileData(profile)
+    }
 
     private suspend fun checkIfRecordExists() {
         if (dayStatsRepository.dayStatsData.value == null) {
