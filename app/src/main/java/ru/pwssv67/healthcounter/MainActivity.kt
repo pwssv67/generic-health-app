@@ -450,7 +450,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val addImage = eatAdd.drawable
         val minusImage = eatMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = ANIMATION_LONG
+        textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             eatCounterView.setTextColor(animation?.animatedValue as Int)
             caloriesCaption.setTextColor(animation.animatedValue as Int)
@@ -458,7 +458,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         })
 
         val buttonColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        buttonColorAnimation.duration = ANIMATION_LONG
+        buttonColorAnimation.duration = ANIMATION_SHORT
         buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
@@ -491,7 +491,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val textColorFrom = getColor(R.color.secondaryText)
         val textColorTo = getColor(R.color.backgroundColor)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = ANIMATION_LONG
+        textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation.animatedValue as Int)
@@ -601,7 +601,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val textColorFrom = getColor(R.color.backgroundColor)
         val textColorTo = getColor(R.color.secondaryText)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-        textColorAnimation.duration = ANIMATION_LONG
+        textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             //trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation?.animatedValue as Int)
@@ -611,7 +611,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         val addColorTo = getColor(R.color.colorAccent)
         val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
-        addColorAnimation.duration = ANIMATION_LONG
+        addColorAnimation.duration = ANIMATION_SHORT
         addColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
         })
@@ -675,7 +675,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             val addImage = eatAdd.drawable
             val minusImage = eatMinus.drawable
             val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-            textColorAnimation.duration = ANIMATION_LONG
+            textColorAnimation.duration = ANIMATION_SHORT
 
             textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
                 eatCounterView.setTextColor(animation?.animatedValue as Int)
@@ -685,7 +685,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
             val buttonColorAnimation =
                 ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
-            buttonColorAnimation.duration = ANIMATION_LONG
+            buttonColorAnimation.duration = ANIMATION_SHORT
             buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
                 //addImage.setTint(animation?.animatedValue as Int)
                 minusImage.setTint(animation?.animatedValue as Int)
@@ -694,7 +694,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             val addColorTo = getColor(R.color.colorAccent)
             val addButtonColorAnimation =
                 ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
-            addButtonColorAnimation.duration = ANIMATION_LONG
+            addButtonColorAnimation.duration = ANIMATION_SHORT
             addButtonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
                 addImage.setTint(animation?.animatedValue as Int)
             })
