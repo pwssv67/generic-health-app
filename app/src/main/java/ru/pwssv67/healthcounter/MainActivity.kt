@@ -3,18 +3,13 @@ package ru.pwssv67.healthcounter
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
-import android.graphics.Shader
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.animation.OvershootInterpolator
-import android.widget.Filter
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -24,7 +19,6 @@ import ru.pwssv67.healthcounter.Dialogs.AddDialog
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Goal
 import ru.pwssv67.healthcounter.Extensions.Profile
-import ru.pwssv67.healthcounter.Extensions.showKeyboard
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
@@ -39,16 +33,13 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     lateinit var drinkMinus: ImageView
     lateinit var eatMinus: ImageView
     lateinit var trainingMinus: ImageView
-    lateinit var drinkLayout:LinearLayout
-    lateinit var drinkCaption:TextView
-    lateinit var trainingLayout: LinearLayout
-    lateinit var trainingCaption: TextView
+    lateinit var drinkBackground: View
+    lateinit var trainingBackground: View
     lateinit var imageDrink: ImageView
     lateinit var imageTraining: ImageView
-    lateinit var caloriesLayout: LinearLayout
-    lateinit var caloriesCaption: TextView
+    lateinit var caloriesBackground: View
     lateinit var eatImage: ImageView
-    lateinit var showHistory: TextView
+    lateinit var showHistory: ImageView
     lateinit var settingsButton:ImageView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
@@ -162,16 +153,13 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         drinkMinus = iv_drink_minus
         eatMinus = iv_eat_minus
         trainingMinus = iv_training_minus
-        drinkLayout = layout_drink
-        drinkCaption = tv_glasses
-        trainingLayout = layout_training
-        trainingCaption = tv_training
+        drinkBackground = v_drink_background
+        trainingBackground = v_training_background
         imageDrink = iv_drink_image
         imageTraining = iv_training_image
-        caloriesLayout = layout_eat
-        caloriesCaption = tv_calories
+        caloriesBackground = v_eat_background
         eatImage = iv_eat_image
-        showHistory = tv_show_history
+        showHistory = iv_show_history
         settingsButton = iv_settings
 
 
@@ -359,9 +347,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
     private fun goalReachedGlasses() {
         val colorFrom = getColor(R.color.backgroundColor)
-        val colorTo = getColor(R.color.successColor)
+        val colorTo = getColor(R.color.colorPrimaryDark)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = drinkLayout.background as Drawable
+        val background = drinkBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
@@ -384,7 +372,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             drinkCounterView.setTextColor(animation?.animatedValue as Int)
-            drinkCaption.setTextColor(animation.animatedValue as Int)
             //image.setTint(animation.animatedValue as Int)
             addImage.setTint(animation.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
@@ -404,9 +391,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
-            if (animation.animatedValue as Int >= 360) {
-                imageDrink.setImageResource(R.drawable.ic_check_circle_black_24dp)
-            }
+            //if (animation.animatedValue as Int >= 360) {
+            //    imageDrink.setImageResource(R.drawable.ic_check_circle_black_24dp)
+            //}
         })
 
         //alphaAnimation.start()
@@ -438,7 +425,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
                 }
         }
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = caloriesLayout.background as Drawable
+        val background = caloriesBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
@@ -453,7 +440,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             eatCounterView.setTextColor(animation?.animatedValue as Int)
-            caloriesCaption.setTextColor(animation.animatedValue as Int)
             eatImage.drawable.setTint(animation.animatedValue as Int)
         })
 
@@ -473,7 +459,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorFrom = getColor(R.color.backgroundColor)
         val colorTo = getColor(R.color.successColor)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = trainingLayout.background as Drawable
+        val background = trainingBackground.background as Drawable
 
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
@@ -496,7 +482,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation.animatedValue as Int)
             trainingCounterView.setTextColor(animation.animatedValue as Int)
-            trainingCaption.setTextColor(animation.animatedValue as Int)
         })
 
 
@@ -513,9 +498,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
-            if (animation.animatedValue as Int >= 360) {
-                imageTraining.setImageResource(R.drawable.ic_check_circle_black_24dp)
-            }
+            //if (animation.animatedValue as Int >= 360) {
+            //    imageTraining.setImageResource(R.drawable.ic_check_circle_black_24dp)
+            //}
         })
 
         //alphaAnimation.start()
@@ -531,7 +516,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorFrom = getColor(R.color.successColor)
         val colorTo = getColor(R.color.backgroundColor)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = drinkLayout.background as Drawable
+        val background = drinkBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
@@ -540,23 +525,20 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val image = getDrawable(R.drawable.ic_glass_of_water_64dp)
 
         val textColorFrom = getColor(R.color.backgroundColor)
-        val textColorTo = getColor(R.color.secondaryText)
+        val textColorTo = getColor(R.color.primaryText)
         val addImage = drinkAdd.drawable
         val minusImage = drinkMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             drinkCounterView.setTextColor(animation?.animatedValue as Int)
-            drinkCaption.setTextColor(animation.animatedValue as Int)
-            image?.setTint(animation.animatedValue as Int)
-            //addImage.setTint(animation.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
         })
 
-        val minusColorTo = getColor(R.color.colorAccent)
-        val minusColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, minusColorTo)
-        minusColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        val addColorTo = getColor(R.color.colorPrimaryDark)
+        val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom,addColorTo)
+        addColorAnimation.duration = ANIMATION_SHORT
+        addColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
         })
 
@@ -573,14 +555,14 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
-            if (animation.animatedValue as Int <= -360) {
-                imageDrink.setImageResource(R.drawable.ic_glass_of_water_64dp)
-            }
+            //if (animation.animatedValue as Int <= -360) {
+            //    imageDrink.setImageResource(R.drawable.ic_glass_of_water_64dp)
+            //}
         })
 
         colorAnimation.start()
         textColorAnimation.start()
-        minusColorAnimation.start()
+        addColorAnimation.start()
         rotateAnimation.start()
         scaleAnimation.start()
         //drinkAdd.isClickable = false
@@ -591,7 +573,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorFrom = getColor(R.color.successColor)
         val colorTo = getColor(R.color.backgroundColor)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = trainingLayout.background as Drawable
+        val background = trainingBackground.background as Drawable
 
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
@@ -606,7 +588,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             //trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation?.animatedValue as Int)
             trainingCounterView.setTextColor(animation.animatedValue as Int)
-            trainingCaption.setTextColor(animation.animatedValue as Int)
         })
 
         val addColorTo = getColor(R.color.colorAccent)
@@ -629,9 +610,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         rotateAnimation.interpolator = OvershootInterpolator()
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
-            if (animation.animatedValue as Int <= -360) {
-                imageTraining.setImageResource(R.drawable.ic_fitness_64dp)
-            }
+            //if (animation.animatedValue as Int <= -360) {
+            //    imageTraining.setImageResource(R.drawable.ic_fitness_64dp)
+            //}
         })
 
         colorAnimation.start()
@@ -661,7 +642,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        val background = caloriesLayout.background as Drawable
+        val background = caloriesBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
@@ -679,7 +660,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
             textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
                 eatCounterView.setTextColor(animation?.animatedValue as Int)
-                caloriesCaption.setTextColor(animation.animatedValue as Int)
                 eatImage.drawable.setTint(animation.animatedValue as Int)
             })
 

@@ -23,7 +23,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/v_add_food_header"
         android:text="@string/how_much_add"
-        android:textColor="@android:color/white"
+        android:textColor="@color/primaryText"
         android:textSize="@dimen/main_button_text"
         />
 

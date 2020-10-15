@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Health Counter</string>
-    <string name="hello_main">Привет</string>
-    <string name="whats_new">Что у тебя нового?</string>
+    <string name="hello_main">Так держать!</string>
+    <string name="whats_new">Ты выполняешь цели уже три дня подряд</string>
     <string name="glasses">Стаканов</string>
     <string name="calories">Калорий</string>
     <string name="minutes">Минут</string>
