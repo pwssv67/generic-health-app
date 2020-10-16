@@ -27,7 +27,7 @@
         android:layout_marginLeft="19dp"
         android:elevation="0dp"
         android:text="@string/hello_main"
-
+        android:fontFamily="@font/roboto_regular"
         android:textColor="@color/primaryText"
         android:textSize="@dimen/text_header_main"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="24dp"
         android:text="@string/whats_new"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@font/roboto_light"
 
         android:textColor="@color/primaryText"
         android:elevation="0dp"
@@ -62,7 +62,7 @@
         app:layout_constraintBottom_toBottomOf="@id/v_header"
         android:layout_marginLeft="24dp"
         android:textColor="#525252"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@font/roboto_light"
         android:text="Сегодня"
         android:textSize="24sp"
         />
@@ -143,7 +143,7 @@
         app:layout_constraintRight_toLeftOf="@id/v_drink_background"
         app:layout_constraintTop_toTopOf="@id/v_drink_background"
         android:textColor="@color/secondaryText"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@font/roboto_light"
         tools:text="0" />
 
     <ImageView
@@ -190,7 +190,7 @@
         android:id="@+id/iv_eat_minus"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/ic_remove_drink_black_64dp"
+        android:src="@drawable/ic_remove_eat_black_64dp"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_eat_background"
         app:layout_constraintLeft_toLeftOf="@id/v_eat_background"
@@ -211,14 +211,14 @@
         app:layout_constraintRight_toLeftOf="@id/v_eat_background"
         app:layout_constraintTop_toTopOf="@id/v_eat_background"
         android:textColor="@color/secondaryText"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@font/roboto_light"
         tools:text="0" />
 
     <ImageView
         android:id="@+id/iv_eat_plus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_drink_black_64dp"
+        android:src="@drawable/ic_add_eat_black_64dp"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_eat_background"
         app:layout_constraintRight_toRightOf="@id/v_eat_background"
@@ -230,7 +230,7 @@
         android:id="@+id/iv_training_image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/ic_fitness_64dp"
+        android:src="@drawable/ic_flame"
         app:layout_constraintTop_toTopOf="@id/v_training_background"
         app:layout_constraintBottom_toBottomOf="@id/v_training_background"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -259,7 +259,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:elevation="@dimen/default_elevation"
-        android:src="@drawable/ic_remove_drink_black_64dp"
+        android:src="@drawable/ic_remove_training_black_64dp"
         app:layout_constraintBottom_toBottomOf="@id/v_training_background"
         app:layout_constraintLeft_toLeftOf="@id/v_training_background"
         app:layout_constraintTop_toTopOf="@id/v_training_background"
@@ -286,7 +286,7 @@
         android:id="@+id/iv_training_plus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_drink_black_64dp"
+        android:src="@drawable/ic_add_training_black_64dp"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_training_background"
         app:layout_constraintRight_toRightOf="@id/v_training_background"
