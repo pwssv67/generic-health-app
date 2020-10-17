@@ -291,7 +291,7 @@
         app:layout_constraintBottom_toBottomOf="@id/v_training_background"
         app:layout_constraintRight_toRightOf="@id/v_training_background"
         app:layout_constraintTop_toTopOf="@id/v_training_background"
-        app:layout_constraintLeft_toRightOf="@id/tv_training_counter"/>
+        app:layout_constraintLeft_toRightOf="@id/tv_training_counter" />
 
     <ImageView
         android:id="@+id/iv_show_history"
