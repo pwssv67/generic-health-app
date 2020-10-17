@@ -1,9 +1,12 @@
 package ru.pwssv67.healthcounter
 
+import android.animation.ValueAnimator
+import android.graphics.drawable.GradientDrawable
 import android.opengl.ETC1Util
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.renderscript.Sampler
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -84,7 +87,7 @@ class ProfileActivity : AppCompatActivity() {
             trainingGoal.isFocusableInTouchMode = false
             trainingGoal.isEnabled = false
 
-            saveButton.text = getText(R.string.edit)
+            saveButtonAnimation()
 
             isEditMode = false
         }
@@ -101,9 +104,51 @@ class ProfileActivity : AppCompatActivity() {
             trainingGoal.isFocusableInTouchMode = true
             trainingGoal.isEnabled = true
 
-            saveButton.text = getText(R.string.save)
+            saveButtonAnimation()
 
             isEditMode = true
+        }
+    }
+
+    private fun saveButtonAnimation() {
+        val colorFirst = getColor(R.color.primaryText)
+        val colorSecond = getColor(R.color.backgroundColor)
+        if (isEditMode) {
+            saveButton.text = getText(R.string.edit)
+
+
+            val backgroundColorAnimation = ValueAnimator.ofArgb(colorSecond, colorFirst)
+            backgroundColorAnimation.duration = 175
+            backgroundColorAnimation.addUpdateListener { animation ->
+                saveButton.background.setTint(animation.animatedValue as Int)
+            }
+
+            val textColorAnimation = ValueAnimator.ofArgb(colorFirst, colorSecond)
+            textColorAnimation.duration = 175
+            textColorAnimation.addUpdateListener { animation ->
+                saveButton.setTextColor(animation.animatedValue as Int)
+            }
+
+            backgroundColorAnimation.start()
+            textColorAnimation.start()
+        }
+        else {
+            saveButton.text = getText(R.string.save)
+
+            val backgroundColorAnimation = ValueAnimator.ofArgb(colorFirst, colorSecond)
+            backgroundColorAnimation.duration = 175
+            backgroundColorAnimation.addUpdateListener { animation ->
+                saveButton.background.setTint(animation.animatedValue as Int)
+            }
+
+            val textColorAnimation = ValueAnimator.ofArgb(colorSecond, colorFirst)
+            textColorAnimation.duration = 175
+            textColorAnimation.addUpdateListener { animation ->
+                saveButton.setTextColor(animation.animatedValue as Int)
+            }
+
+            backgroundColorAnimation.start()
+            textColorAnimation.start()
         }
     }
 }

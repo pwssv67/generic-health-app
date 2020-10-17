@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -19,7 +21,7 @@ import ru.pwssv67.healthcounter.R
 
 class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragment() {
 
-    lateinit var addButton: Button
+    lateinit var addButton: TextView
     lateinit var input: EditText
     lateinit var caption: TextView
     lateinit var headerCaption: TextView
@@ -31,7 +33,15 @@ class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragm
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.add_dialog, container, false)
+
+        val view =  inflater.inflate(R.layout.add_dialog, container, false)
+        if(dialog!=null && getDialog()?.window != null) {
+            getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+            getDialog()?.window?.requestFeature(Window.FEATURE_NO_TITLE);
+            getDialog()?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
+        }
+
+        return view
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +62,7 @@ class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragm
         val view = inflater?.inflate(R.layout.add_dialog, null)
         input = view?.findViewById(R.id.et_calories_counter) as EditText
         builder.setView(view)
-        addButton = view.findViewById(R.id.iv_add_food) as Button
+        addButton = view.findViewById(R.id.tv_add_food) as TextView
         addButton.setOnClickListener {
             mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood, isAdd)
         }
