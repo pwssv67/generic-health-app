@@ -35,6 +35,10 @@ android {
     }
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -47,13 +51,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    // Charts
-    implementation 'com.diogobernardino:williamchart:3.7.2'
 
-    // Tooltips
-    implementation 'com.diogobernardino.williamchart:tooltip-slider:3.7.2'
-    implementation 'com.diogobernardino.williamchart:tooltip-points:3.7.2'
 
 
     def room_version = "2.2.5"

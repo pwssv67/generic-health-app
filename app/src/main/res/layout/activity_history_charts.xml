@@ -39,20 +39,15 @@
         android:textSize="24sp"
         />
 
-    <com.db.williamchart.view.BarChartView
-        android:id="@+id/chart_glasses"
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/glasses_chart"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:padding="8dp"
-        app:chart_labelsFont = "@font/roboto_light"
-        app:chart_labelsSize = "18sp"
-        app:chart_barsColor="@color/colorPrimaryDark"
-        app:chart_barsRadius="12dp"
-        app:chart_spacing="16dp"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_glasses_chart"
-        android:layout_marginTop="12dp"/>
+        android:layout_height="200dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_glasses_chart"
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
