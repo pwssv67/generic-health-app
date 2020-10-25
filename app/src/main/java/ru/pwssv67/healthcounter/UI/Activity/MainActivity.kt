@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter
+package ru.pwssv67.healthcounter.UI.Activity
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.renderscript.Sampler
 import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
@@ -16,10 +15,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.pwssv67.healthcounter.Dialogs.AddDialog
+import ru.pwssv67.healthcounter.UI.Dialogs.AddDialog
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Goal
 import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.R
+import ru.pwssv67.healthcounter.ViewModels.DayViewModel
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             isGoalReachedDrink = false
         }
 
-        if (day.glasses >= profile.drink_goal) {
+        if (day.glasses >= profile.drink_goal && !isGoalReachedDrink) {
             goalReachedGlasses()
             isGoalReachedDrink = true
         }

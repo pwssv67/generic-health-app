@@ -29,20 +29,17 @@
         android:backgroundTint="@color/primaryText"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_history"
+    <ru.pwssv67.healthcounter.UI.View.ChartView
+        android:id="@+id/glasses_chart_custom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        android:layout_marginTop="8dp"
-        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-        android:orientation="horizontal"
-        android:layoutDirection="rtl"
-        android:paddingTop="4dp"
-        android:paddingBottom="16dp"
-        android:paddingHorizontal="8dp"
-        tools:listitem="@layout/history_fragment"
-        tools:itemCount="5"
+        android:layout_height="232dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:text="@string/glasses"
+        android:background="@drawable/mainscreen_snippet_background"
+        android:backgroundTint="@color/backgroundColor"
+        android:elevation="@dimen/default_elevation"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

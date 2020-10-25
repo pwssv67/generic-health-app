@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter
+package ru.pwssv67.healthcounter.Repositories
 
 import android.util.Log
 import androidx.lifecycle.LiveData

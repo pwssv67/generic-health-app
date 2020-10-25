@@ -1,24 +1,22 @@
-package ru.pwssv67.healthcounter
+package ru.pwssv67.healthcounter.UI.Activity
 
 import android.animation.ValueAnimator
-import android.graphics.drawable.GradientDrawable
-import android.opengl.ETC1Util
+import android.graphics.drawable.TransitionDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.renderscript.Sampler
-import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.R
+import ru.pwssv67.healthcounter.ViewModels.DayViewModel
 
 class ProfileActivity : AppCompatActivity() {
     lateinit var saveButton: TextView
     lateinit var drinkGoal:EditText
     lateinit var caloriesGoal:EditText
     lateinit var trainingGoal:EditText
-    lateinit var viewModel:DayViewModel
+    lateinit var viewModel: DayViewModel
     lateinit var profile: Profile
     var isEditMode = false
 
@@ -111,44 +109,37 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun saveButtonAnimation() {
-        val colorFirst = getColor(R.color.primaryText)
-        val colorSecond = getColor(R.color.backgroundColor)
+        val colorBlack = getColor(R.color.primaryText)
+        val colorWhite = getColor(R.color.backgroundColor)
+
         if (isEditMode) {
             saveButton.text = getText(R.string.edit)
+            val background = saveButton.background as TransitionDrawable
 
-
-            val backgroundColorAnimation = ValueAnimator.ofArgb(colorSecond, colorFirst)
-            backgroundColorAnimation.duration = 175
-            backgroundColorAnimation.addUpdateListener { animation ->
-                saveButton.background.setTint(animation.animatedValue as Int)
-            }
-
-            val textColorAnimation = ValueAnimator.ofArgb(colorFirst, colorSecond)
+            val textColorAnimation = ValueAnimator.ofArgb(colorWhite, colorBlack)
             textColorAnimation.duration = 175
             textColorAnimation.addUpdateListener { animation ->
                 saveButton.setTextColor(animation.animatedValue as Int)
             }
 
-            backgroundColorAnimation.start()
             textColorAnimation.start()
+            background.reverseTransition(175)
+
         }
         else {
             saveButton.text = getText(R.string.save)
 
-            val backgroundColorAnimation = ValueAnimator.ofArgb(colorFirst, colorSecond)
-            backgroundColorAnimation.duration = 175
-            backgroundColorAnimation.addUpdateListener { animation ->
-                saveButton.background.setTint(animation.animatedValue as Int)
-            }
+            val background = saveButton.background as TransitionDrawable
 
-            val textColorAnimation = ValueAnimator.ofArgb(colorSecond, colorFirst)
+            val textColorAnimation = ValueAnimator.ofArgb(colorBlack, colorWhite)
             textColorAnimation.duration = 175
             textColorAnimation.addUpdateListener { animation ->
                 saveButton.setTextColor(animation.animatedValue as Int)
             }
 
-            backgroundColorAnimation.start()
             textColorAnimation.start()
+            background.startTransition(175)
+
         }
     }
 }

@@ -8,7 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.pwssv67.healthcounter.DayStatsRepository
+import ru.pwssv67.healthcounter.Repositories.DayStatsRepository
 import ru.pwssv67.healthcounter.Extensions.DayStats
 
 @Database(entities = [DayStats::class], version = 1)
@@ -45,7 +45,7 @@ abstract class DayStatsDatabase : RoomDatabase() {
             }
         }
 
-        public var Repository:DayStatsRepository? = null
+        public var Repository: DayStatsRepository? = null
 
         fun getDatabase(
             context: Context,

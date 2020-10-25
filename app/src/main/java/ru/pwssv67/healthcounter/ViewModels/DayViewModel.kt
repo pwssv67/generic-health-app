@@ -1,18 +1,22 @@
-package ru.pwssv67.healthcounter
+package ru.pwssv67.healthcounter.ViewModels
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.pwssv67.healthcounter.App
 import ru.pwssv67.healthcounter.Database.DayStatsDatabase
+import ru.pwssv67.healthcounter.Repositories.DayStatsRepository
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.Repositories.PreferencesRepository
 import java.time.LocalDate
 
 class DayViewModel(application: Application): AndroidViewModel(application) {
-    private val dayStatsRepository:DayStatsRepository
-    private val preferencesRepository = PreferencesRepository
+    private val dayStatsRepository: DayStatsRepository
+    private val preferencesRepository =
+        PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
 
 
@@ -20,7 +24,8 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
 
     init {
         val dayStatsDao = DayStatsDatabase.getDatabase(App.applicationContext(), viewModelScope).dayStatsDao()
-        dayStatsRepository = DayStatsRepository(dayStatsDao)
+        dayStatsRepository =
+            DayStatsRepository(dayStatsDao)
         DayStatsDatabase.Repository = dayStatsRepository
         dayStatsData.value = dayStatsRepository.dayStatsData.value
         val dataObserver = Observer<DayStats> {
@@ -59,10 +64,11 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
         //dayStatsData.value = dayStats
     }
 
-    fun getProfile() = preferencesRepository.getProfileData()
+    fun getProfile() =
+        PreferencesRepository.getProfileData()
 
     fun saveProfile(profile: Profile) {
-        preferencesRepository.saveProfileData(profile)
+        PreferencesRepository.saveProfileData(profile)
     }
 
     private suspend fun checkIfRecordExists() {

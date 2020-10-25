@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.Adapters
+package ru.pwssv67.healthcounter.UI.Adapters
 
 import android.view.LayoutInflater
 import android.view.View

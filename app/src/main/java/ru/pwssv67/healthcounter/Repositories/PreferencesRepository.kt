@@ -1,7 +1,8 @@
-package ru.pwssv67.healthcounter
+package ru.pwssv67.healthcounter.Repositories
 
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import ru.pwssv67.healthcounter.App
 import ru.pwssv67.healthcounter.Extensions.Profile
 
 object PreferencesRepository{
@@ -18,20 +19,35 @@ object PreferencesRepository{
     }
 
     fun getProfileData(): Profile = Profile (
-        prefs.getString(NAME, "")?:"",
-        prefs.getInt(DRINK_GOAL, 8),
-        prefs.getInt(TRAINING_GOAL, 30),
-        prefs.getInt(EAT_GOAL_FIRST, 1500),
-        prefs.getInt(EAT_GOAL_SECOND, 2500)
+        prefs.getString(
+            NAME, "")?:"",
+        prefs.getInt(
+            DRINK_GOAL, 8),
+        prefs.getInt(
+            TRAINING_GOAL, 30),
+        prefs.getInt(
+            EAT_GOAL_FIRST, 1500),
+        prefs.getInt(
+            EAT_GOAL_SECOND, 2500)
     )
 
     fun saveProfileData(profile: Profile) {
         with(profile) {
-            putValue(NAME to name)
-            putValue(DRINK_GOAL to drink_goal)
-            putValue(TRAINING_GOAL to training_goal)
-            putValue(EAT_GOAL_FIRST to eat_goal_first)
-            putValue(EAT_GOAL_SECOND to eat_goal_second)
+            putValue(
+                NAME to name
+            )
+            putValue(
+                DRINK_GOAL to drink_goal
+            )
+            putValue(
+                TRAINING_GOAL to training_goal
+            )
+            putValue(
+                EAT_GOAL_FIRST to eat_goal_first
+            )
+            putValue(
+                EAT_GOAL_SECOND to eat_goal_second
+            )
         }
     }
 

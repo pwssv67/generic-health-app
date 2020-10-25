@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity">
+    tools:context=".UI.Activity.ProfileActivity">
 
 
     <TextView
@@ -131,14 +131,13 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_training_goal_picker"
-        android:background="@drawable/profile_border_button_background"
+        android:background="@drawable/profile_save_button_transition"
         android:paddingVertical="8dp"
         android:paddingHorizontal="16dp"
         android:layout_marginTop="32dp"
         android:textSize="24sp"
-        android:textColor="@color/backgroundColor"
+        android:textColor="@color/primaryText"
         android:fontFamily="@font/roboto_light"
-        android:backgroundTint="@color/primaryText"
         android:text="@string/edit"
         android:elevation="@dimen/default_elevation"
         />

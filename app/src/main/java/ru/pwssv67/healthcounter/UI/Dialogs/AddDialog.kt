@@ -1,22 +1,15 @@
-package ru.pwssv67.healthcounter.Dialogs
+package ru.pwssv67.healthcounter.UI.Dialogs
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import org.w3c.dom.Text
-import ru.pwssv67.healthcounter.App
-import ru.pwssv67.healthcounter.Extensions.hideKeyboard
-import ru.pwssv67.healthcounter.Extensions.showKeyboard
 import ru.pwssv67.healthcounter.R
 
 class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragment() {
