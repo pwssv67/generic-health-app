@@ -217,15 +217,19 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun onUp() {
+        unhighlightBar()
+        invalidate()
+    }
+
+    private fun unhighlightBar() {
         val i = bars.indexOf(highlightedBar)
-        if (i>=0) {
+        if (i >= 0) {
             bars[i].color = when {
                 bars[i].value >= limit -> succesColor
                 else -> defaultColor
             }
         }
         highlightedBar = null
-        invalidate()
     }
 
     private fun onTouch(x: Float, y:Float) {
@@ -269,6 +273,7 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun scroll(x:Int, y:Int) {
+        unhighlightBar()
         if (x<0) { // swiping right, must show left
             Log.e("", "${bars[0].i}")
             if (points.size > barsAmount && bars[0].i != 0) {
