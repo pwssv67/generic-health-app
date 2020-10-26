@@ -24,6 +24,7 @@ class ChartBar(rect:RectF, paint: Paint) {
     var value:Int = 0
     var paint: Paint
     var color:Int = 0
+    var i:Int = -1
 
     init {
         this.rect = rect

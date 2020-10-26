@@ -41,7 +41,7 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
         }
 
         val tempObserver = Observer<List<DayStats>> {
-            if (it!=null) {
+            if (it!=null && !it.isNullOrEmpty()) {
                 Log.e("", it[0].day)
             }
 
