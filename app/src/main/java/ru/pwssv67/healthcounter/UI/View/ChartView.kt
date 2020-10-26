@@ -18,7 +18,7 @@ class ChartView @JvmOverloads constructor(
     defStyleAttr:Int=0
 ):View(context ,attrs ,defStyleAttr) {
     companion object {
-        val defaultPoints = ArrayList<Int>(listOf(7,8,0,10,6))
+        val defaultPoints = ArrayList<Int>(listOf(7,8,0,10,6).reversed())
     }
 
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -43,6 +43,7 @@ class ChartView @JvmOverloads constructor(
     private var factorHorizontal = 15f
     private var barWidth = 5f
     private var barSpacing = 7f
+    private var barsAmount = 3
     var succesColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
@@ -52,12 +53,18 @@ class ChartView @JvmOverloads constructor(
     //var text = "Стаканов"
 
     init {
-        if (attrs!= null) {
+        if (attrs!= null && !this.isInEditMode) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.ChartView)
-            text = a.getText(R.styleable.ChartView_text).toString()
+            if (a != null) {
+                text = a.getText(R.styleable.ChartView_text).toString()
+            }
             a.recycle()
+        } else {
+            text = "Sample"
         }
     }
+
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -77,7 +84,8 @@ class ChartView @JvmOverloads constructor(
     private fun drawText(canvas: Canvas?) {
         textPaint.color = textColor
         textPaint.textSize = 8*factorHorizontal
-        textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)
+        if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_regular), Typeface.NORMAL)}
+        else {textPaint.typeface = Typeface.SANS_SERIF}
         textPaint.textAlign = Paint.Align.CENTER
         canvas?.drawText(text, width/2f, 4*factorVertical, textPaint)
     }
@@ -87,20 +95,21 @@ class ChartView @JvmOverloads constructor(
             val bar= highlightedBar as ChartBar
             textPaint.color = bar.color
             textPaint.textSize = 6*factorHorizontal
-            textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_regular), Typeface.NORMAL)
+            if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_regular), Typeface.NORMAL)}
+            else {textPaint.typeface = Typeface.SANS_SERIF}
             textPaint.textAlign = Paint.Align.CENTER
             canvas?.drawText(bar.value.toString(), width/2f, 8*factorVertical, textPaint)
         } else return
     }
 
     private fun drawBars(canvas: Canvas?) {
-        for (bar: ChartBar in bars) {
-            paint.color = bar.color
+        for (i in 0 until barsAmount) {
+            paint.color = bars[i].color
             canvas?.drawRoundRect(
-                bar.rect,
+                bars[i].rect,
                 rounding * factorHorizontal / 1.5f,
                 rounding * factorHorizontal / 1.5f,
-                bar.paint
+                bars[i].paint
             )
         }
     }
@@ -136,8 +145,8 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun setValues() {
-        for (i in bars.indices) {
-            bars[i].value = points[i]
+        for (i in 0 until barsAmount) {
+            bars[i].value = points.reversed()[i]
             if (points[i]>=limit) {
                 bars[i].color = succesColor
             }
