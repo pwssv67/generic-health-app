@@ -32,9 +32,17 @@ class HistoryActivity : AppCompatActivity(){
         chart = glasses_chart_custom
        // recyclerView.adapter = HistoryAdapter()
         //adapter = recyclerView.adapter as HistoryAdapter
+        var arrayGlasses = ArrayList<Int>()
         val observer = Observer<List<DayStats>> {
-            if (it!=null) {
-                //setDataGlasses(it)
+            if (it!=null && !it.isNullOrEmpty()) {
+                arrayGlasses.clear()
+                for (day in it) {
+                    arrayGlasses.add(day.glasses)
+                }
+                chart.points = arrayGlasses
+                chart.notifyDataSetChanged()
+                Log.e("obs", "${it.size}")
+                Log.e("obs", "${arrayGlasses.size}")
             }
         }
 

@@ -24,7 +24,7 @@ class ChartView @JvmOverloads constructor(
     defStyleAttr:Int=0
 ):View(context ,attrs ,defStyleAttr) {
     companion object {
-        val defaultPoints = ArrayList<Int>(listOf(7,8,0,10,6,7).reversed())
+        val defaultPoints = ArrayList<Int>(listOf(7,8).reversed())
     }
 
 
@@ -60,6 +60,7 @@ class ChartView @JvmOverloads constructor(
     var accentColor = context.getColor(R.color.colorAccent)
     var textColor = context.getColor(R.color.primaryText)
     var highlightedBar:ChartBar? = null
+    var showLimit = false
     lateinit var text:String
     //var text = "Стаканов"
 
@@ -95,17 +96,17 @@ class ChartView @JvmOverloads constructor(
 
     private fun drawText(canvas: Canvas?) {
         textPaint.color = textColor
-        textPaint.textSize = 8*factorHorizontal
+        textPaint.textSize = 6*factorHorizontal
         if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)}
         else {textPaint.typeface = Typeface.SANS_SERIF}
         textPaint.textAlign = Paint.Align.CENTER
-        canvas?.drawText(text, width/2f, 4*factorVertical, textPaint)
+        canvas?.drawText(text, width/2f, 3*factorVertical, textPaint)
     }
 
     private fun drawValue(canvas: Canvas?) {
         if (highlightedBar != null) {
             val bar= highlightedBar as ChartBar
-            textPaint.color = bar.color
+            textPaint.color = succesColor
             textPaint.textSize = 6*factorHorizontal
             if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)}
             else {textPaint.typeface = Typeface.SANS_SERIF}
@@ -146,7 +147,7 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun drawLimitLine(canvas: Canvas?) {
-        if (limit != 0) {
+        if (limit != 0 && showLimit) {
             paint.color = defaultColor
             paint.strokeWidth = 0.2f*factorVertical
             canvas?.drawLine(
@@ -191,6 +192,7 @@ class ChartView @JvmOverloads constructor(
             }
         }
         else {
+
             for (i in points.indices) {
                 bars[i].value = points.reversed()[i]
                 bars[i].i = i
@@ -289,7 +291,7 @@ class ChartView @JvmOverloads constructor(
 
 
                 if (bars[0].i >= 1) {
-                    if (bars[4].rect.left >= width  && isLeftBarActive) {
+                    if ((bars[4].rect.left >= width) && isLeftBarActive ) {
                         scrollAccumulator = 0
                         Log.e("", "sec")
                         for (i in bars.size - 1 downTo 1) {
@@ -329,7 +331,6 @@ class ChartView @JvmOverloads constructor(
 
                     if (!isLeftBarActive && bars[0].i > 0) {
                         Log.e("", "first")
-                        isLeftBarActive = true
                         barLeft.i = bars[0].i - 1
                         val i = barLeft.i
                         barLeft.value = points[i]
@@ -348,6 +349,85 @@ class ChartView @JvmOverloads constructor(
                         barLeft.rect.bottom = height - insetCustom
                         barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
                         barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
+                        isLeftBarActive = true
+                    }
+                }
+            }
+        } else {
+
+            if (points.size > barsAmount && bars[4].i != points.size-1) {
+                for (bar in bars) {
+                    bar.rect.left -= x
+                    bar.rect.right -= x
+                }
+                barRight.rect.left -= x
+                barRight.rect.right -= x
+                barLeft.rect.left -= x
+                barLeft.rect.right -= x
+                //scrollAccumulator -= x
+
+
+                if (bars[4].i <= points.size-2) {
+                    if ((bars[0].rect.right <= 0) && isRightBarActive ) {
+                        scrollAccumulator = 0
+                        Log.e("right", "sec")
+                        for (i in 0 until bars.size-1) {
+                            bars[i].i = bars[i + 1].i
+                            bars[i].color = bars[i + 1].color
+                            bars[i].value = bars[i + 1].value
+                            bars[i].rect = RectF(bars[i + 1].rect)
+                        }
+
+                        bars[4].i = barRight.i
+                        bars[4].color = barRight.color
+                        bars[4].value = barRight.value
+                        bars[4].rect = RectF(barRight.rect)
+                        isRightBarActive = false
+
+                        if (bars[4].i < bars.size-1) {
+                            barRight.i = bars[4].i + 1
+                            val i = barRight.i
+                            barRight.value = points[i]
+                            barRight.color = if (barRight.value >= limit) {
+                                succesColor
+                            } else {
+                                defaultColor
+                            }
+                            if (barRight.value <= 0) {
+                                barRight.rect.top =
+                                    barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
+                            } else {
+                                barRight.rect.top =
+                                    height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
+                            }
+                            barRight.rect.bottom = height - insetCustom
+                            barRight.rect.left = bars[4].rect.right + barSpacing * factorHorizontal
+                            barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
+                            isRightBarActive = true
+                        }
+                    }
+
+                    if (!isRightBarActive && bars[4].i < points.size-1) {
+                        Log.e("right", "first")
+                        barRight.i = bars[4].i + 1
+                        val i = barRight.i
+                        barRight.value = points[i]
+                        barRight.color = if (barRight.value >= limit) {
+                            succesColor
+                        } else {
+                            defaultColor
+                        }
+                        if (barRight.value <= 0) {
+                            barRight.rect.top =
+                                barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
+                        } else {
+                            barRight.rect.top =
+                                height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
+                        }
+                        barRight.rect.bottom = height - insetCustom
+                        barRight.rect.left = bars[4].rect.right + barSpacing * factorHorizontal
+                        barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
+                        isRightBarActive = true
                     }
                 }
             }
@@ -360,6 +440,7 @@ class ChartView @JvmOverloads constructor(
     }
 
     fun notifyDataSetChanged() {
+        isValueSet = false
         invalidate()
     }
 
