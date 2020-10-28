@@ -19,30 +19,33 @@ import ru.pwssv67.healthcounter.ViewModels.HistoryViewModel
 
 class HistoryActivity : AppCompatActivity(){
 
-    lateinit var chart:ChartView
+    lateinit var chartGlasses:ChartView
+    lateinit var chartCalories:ChartView
+    lateinit var chartTraining:ChartView
     lateinit var profile: Profile
+    val arrayGlasses = ArrayList<Int>()
+    val arrayCalories = ArrayList<Int>()
+    val arrayTraining = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
-        //val recyclerView: RecyclerView = findViewById(R.id.rv_history)
         val historyViewModel =
             HistoryViewModel(application)
-        val adapter:HistoryAdapter
-        chart = glasses_chart_custom
-       // recyclerView.adapter = HistoryAdapter()
-        //adapter = recyclerView.adapter as HistoryAdapter
-        var arrayGlasses = ArrayList<Int>()
+
+        chartGlasses = glasses_chart_custom
+        chartCalories = calories_chart_custom
+        chartTraining = training_chart_custom
+
         val observer = Observer<List<DayStats>> {
-            if (it!=null && !it.isNullOrEmpty()) {
+            if (!it.isNullOrEmpty()) {
                 arrayGlasses.clear()
                 for (day in it) {
                     arrayGlasses.add(day.glasses)
+                    arrayCalories.add(day.calories)
+                    arrayTraining.add(day.training)
                 }
-                chart.points = arrayGlasses
-                chart.notifyDataSetChanged()
-                Log.e("obs", "${it.size}")
-                Log.e("obs", "${arrayGlasses.size}")
+                setDataOnCharts()
             }
         }
 
@@ -50,14 +53,24 @@ class HistoryActivity : AppCompatActivity(){
         historyViewModel.getDayStats().observe(this, observer)
     }
 
-    fun generateShit():List<DayStats> {
-        val l = mutableListOf<DayStats>()
-        for (i in 0..10) {
-            l.add(DayStats(0,0,0,"$i"))
-        }
-        Log.e("eef", "effe")
-        return l
+    override fun onResume() {
+        super.onResume()
+        chartGlasses.notifyDataSetChanged()
     }
+
+    private fun setDataOnCharts() {
+        Log.e("sdf", "seteddata")
+        chartGlasses.limit = profile.drink_goal
+        chartCalories.limit = profile.eat_goal_second
+        chartTraining.limit = profile.training_goal
+        chartGlasses.points = arrayGlasses
+        chartGlasses.notifyDataSetChanged()
+        chartCalories.points = arrayCalories
+        chartCalories.notifyDataSetChanged()
+        chartTraining.points = arrayTraining
+        chartTraining.notifyDataSetChanged()
+    }
+
 
     /*private fun setDataGlasses(values: List<DayStats>) {
 
