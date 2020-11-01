@@ -42,7 +42,7 @@ class ChartView @JvmOverloads constructor(
     private var isValueSet = false
     private var paddingBottom = 10f
     private var paddingTop = 3f
-    private val zeroHeight = 5f
+    private val zeroHeight = 2f
     private var factorVertical = 50f
     private var factorHorizontal = 15f
     private var barWidth = 3f
@@ -51,6 +51,8 @@ class ChartView @JvmOverloads constructor(
     private var isRightBarActive = false
     private var isLeftBarActive = false
     private var scrollAccumulator = 0
+    private var greatestValue = 0
+    private var isScrolled = false
     var succesColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
@@ -90,7 +92,7 @@ class ChartView @JvmOverloads constructor(
         if (measuredHeight > height) h = measuredHeight
         if (measuredWidth > width) w = measuredWidth
         factorHorizontal = w / (barWidth * bars.size + barSpacing * (bars.size + 1))
-        factorVertical = h / (maxValue + 10).toFloat()
+        factorVertical = h / (maxValue*2).toFloat()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -181,7 +183,7 @@ class ChartView @JvmOverloads constructor(
     private fun setRects() {
         for (i in bars.indices) {
             bars[i].rect.bottom = height - paddingBottom
-            if (bars[i].value <=0) {bars[i].rect.top = bars[i].rect.bottom - zeroHeight*factorHorizontal/1.3f}
+            if (bars[i].value <= maxValue/10) {bars[i].rect.top = bars[i].rect.bottom - zeroHeight*factorHorizontal/1.3f}
             else {bars[i].rect.top = height - (bars[i].value)*factorVertical - rounding*factorHorizontal/3f}
             bars[i].rect.left = (i*barWidth + (i+1)*barSpacing )*factorHorizontal
             bars[i].rect.right = bars[i].rect.left + barWidth*factorHorizontal
@@ -285,6 +287,8 @@ class ChartView @JvmOverloads constructor(
 
     private fun scroll(x:Int, y:Int) {
         unhighlightBar()
+        if (isScrolled) return
+        isScrolled = true
         if (x<0) { // swiping right, must show left
             if (points.size > barsAmount && bars[0].i != 0) {
                 for (bar in bars) {
@@ -297,16 +301,25 @@ class ChartView @JvmOverloads constructor(
                 barLeft.rect.right -= x
                 //scrollAccumulator -= x
 
-
                 if (bars[0].i >= 1) {
                     if ((bars[bars.size - 1].rect.left >= width) && isLeftBarActive ) {
                         scrollAccumulator = 0
+
+                        if (isRightBarActive) {
+                            bars.last().i = barRight.i
+                            bars.last().color = barRight.color
+                            bars.last().value = barRight.value
+                            bars.last().rect = barRight.rect
+                            isRightBarActive = false
+                        }
+
                         for (i in bars.size - 1 downTo 1) {
                             bars[i].i = bars[i - 1].i
                             bars[i].color = bars[i - 1].color
                             bars[i].value = bars[i - 1].value
                             bars[i].rect = RectF(bars[i - 1].rect)
                         }
+
                         bars[0].i = barLeft.i
                         bars[0].color = barLeft.color
                         bars[0].value = barLeft.value
@@ -322,14 +335,14 @@ class ChartView @JvmOverloads constructor(
                             } else {
                                 defaultColor
                             }
-                            if (barLeft.value <= 0) {
+                            barLeft.rect.bottom = height - paddingBottom
+                            if (barLeft.value <= maxValue/10) {
                                 barLeft.rect.top =
                                     barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
                             } else {
                                 barLeft.rect.top =
                                     height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
                             }
-                            barLeft.rect.bottom = height - paddingBottom
                             barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
                             barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
                             isLeftBarActive = true
@@ -345,14 +358,14 @@ class ChartView @JvmOverloads constructor(
                         } else {
                             defaultColor
                         }
-                        if (barLeft.value <= 0) {
+                        barLeft.rect.bottom = height - paddingBottom
+                        if (barLeft.value <= maxValue/10) {
                             barLeft.rect.top =
                                 barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
                         } else {
                             barLeft.rect.top =
                                 height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
                         }
-                        barLeft.rect.bottom = height - paddingBottom
                         barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
                         barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
                         isLeftBarActive = true
@@ -376,6 +389,15 @@ class ChartView @JvmOverloads constructor(
                 if (bars[bars.size - 1].i <= points.size-2) {
                     if ((bars[0].rect.right <= 0) && isRightBarActive ) {
                         scrollAccumulator = 0
+
+                        if (isLeftBarActive) {
+                            bars.first().i = barLeft.i
+                            bars.first().color = barLeft.color
+                            bars.first().value = barLeft.value
+                            bars.first().rect = barLeft.rect
+                            isLeftBarActive = false
+                        }
+
                         for (i in 0 until bars.size-1) {
                             bars[i].i = bars[i + 1].i
                             bars[i].color = bars[i + 1].color
@@ -398,14 +420,14 @@ class ChartView @JvmOverloads constructor(
                             } else {
                                 defaultColor
                             }
-                            if (barRight.value <= 0) {
+                            barRight.rect.bottom = height - paddingBottom
+                            if (barRight.value <= maxValue / 10) {
                                 barRight.rect.top =
                                     barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
                             } else {
                                 barRight.rect.top =
                                     height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
                             }
-                            barRight.rect.bottom = height - paddingBottom
                             barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
                             barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
                             isRightBarActive = true
@@ -421,14 +443,14 @@ class ChartView @JvmOverloads constructor(
                         } else {
                             defaultColor
                         }
-                        if (barRight.value <= 0) {
+                        barRight.rect.bottom = height - paddingBottom
+                        if (barRight.value <= maxValue/ 10) {
                             barRight.rect.top =
                                 barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
                         } else {
                             barRight.rect.top =
                                 height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
                         }
-                        barRight.rect.bottom = height - paddingBottom
                         barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
                         barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
                         isRightBarActive = true
@@ -437,6 +459,7 @@ class ChartView @JvmOverloads constructor(
             }
         }
         invalidate()
+        isScrolled = false
     }
 
     fun animateBars() {
