@@ -7,8 +7,6 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
-import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
@@ -37,7 +35,7 @@ class ChartView @JvmOverloads constructor(
     private val bars = ArrayList<ChartBar>()
     private val rounding = 3f
     var limit:Int = 8
-    var maxValue:Int = limit+2
+    private var maxValue:Int = limit+2
     private var animated = false
     private var isValueSet = false
     private var paddingBottom = 10f
@@ -51,9 +49,8 @@ class ChartView @JvmOverloads constructor(
     private var isRightBarActive = false
     private var isLeftBarActive = false
     private var scrollAccumulator = 0
-    private var greatestValue = 0
     private var isScrolled = false
-    var succesColor = context.getColor(R.color.colorPrimaryDark)
+    var successColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
     var textColor = context.getColor(R.color.primaryText)
@@ -97,7 +94,6 @@ class ChartView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (bars.isEmpty()) Log.e("", "nullempty")
         if (!isValueSet) setBars()
         drawLimitLine(canvas)
         drawBars(canvas)
@@ -117,7 +113,7 @@ class ChartView @JvmOverloads constructor(
     private fun drawValue(canvas: Canvas?) {
         if (highlightedBar != null) {
             val bar= highlightedBar as ChartBar
-            textPaint.color = succesColor
+            textPaint.color = successColor
             textPaint.textSize = textSizeInSp*resources.displayMetrics.scaledDensity*0.8f
             if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)}
             else {textPaint.typeface = Typeface.SANS_SERIF}
@@ -172,11 +168,9 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun setBars() {
-        Log.e("bars", "seted")
         setValues()
         setFactors()
         setRects()
-        Log.e("bar0", "${bars[0].value}")
         isValueSet = true
     }
 
@@ -197,7 +191,7 @@ class ChartView @JvmOverloads constructor(
                 bars[barNumber].value = points[i]
                 bars[barNumber].i = i
                 if (points[i] >= limit) {
-                    bars[barNumber].color = succesColor
+                    bars[barNumber].color = successColor
                 } else {
                     bars[barNumber].color = defaultColor
                 }
@@ -208,7 +202,7 @@ class ChartView @JvmOverloads constructor(
                 bars[i].value = points.reversed()[i]
                 bars[i].i = i
                 if (points[i] >= limit) {
-                    bars[i].color = succesColor
+                    bars[i].color = successColor
                 } else {
                     bars[i].color = defaultColor
                 }
@@ -238,7 +232,7 @@ class ChartView @JvmOverloads constructor(
         val i = bars.indexOf(highlightedBar)
         if (i >= 0) {
             bars[i].color = when {
-                bars[i].value >= limit -> succesColor
+                bars[i].value >= limit -> successColor
                 else -> defaultColor
             }
         }
@@ -306,36 +300,25 @@ class ChartView @JvmOverloads constructor(
                         scrollAccumulator = 0
 
                         if (isRightBarActive) {
-                            bars.last().i = barRight.i
-                            bars.last().color = barRight.color
-                            bars.last().value = barRight.value
-                            bars.last().rect = barRight.rect
+                            bars.last().copy(barRight)
                             isRightBarActive = false
                         }
 
                         for (i in bars.size - 1 downTo 1) {
-                            bars[i].i = bars[i - 1].i
-                            bars[i].color = bars[i - 1].color
-                            bars[i].value = bars[i - 1].value
-                            bars[i].rect = RectF(bars[i - 1].rect)
+                            bars[i].copy(bars[i-1])
                         }
 
-                        bars[0].i = barLeft.i
-                        bars[0].color = barLeft.color
-                        bars[0].value = barLeft.value
-                        bars[0].rect = RectF(barLeft.rect)
+                        bars[0].copy(barLeft)
                         isLeftBarActive = false
 
                         if (bars[0].i > 0) {
                             barLeft.i = bars[0].i - 1
                             val i = barLeft.i
                             barLeft.value = points[i]
-                            barLeft.color = if (barLeft.value >= limit) {
-                                succesColor
-                            } else {
-                                defaultColor
-                            }
+                            barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
+
                             barLeft.rect.bottom = height - paddingBottom
+
                             if (barLeft.value <= maxValue/10) {
                                 barLeft.rect.top =
                                     barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
@@ -353,12 +336,9 @@ class ChartView @JvmOverloads constructor(
                         barLeft.i = bars[0].i - 1
                         val i = barLeft.i
                         barLeft.value = points[i]
-                        barLeft.color = if (barLeft.value >= limit) {
-                            succesColor
-                        } else {
-                            defaultColor
-                        }
+                        barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
                         barLeft.rect.bottom = height - paddingBottom
+
                         if (barLeft.value <= maxValue/10) {
                             barLeft.rect.top =
                                 barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
@@ -391,24 +371,15 @@ class ChartView @JvmOverloads constructor(
                         scrollAccumulator = 0
 
                         if (isLeftBarActive) {
-                            bars.first().i = barLeft.i
-                            bars.first().color = barLeft.color
-                            bars.first().value = barLeft.value
-                            bars.first().rect = barLeft.rect
+                            bars.first().copy(barLeft)
                             isLeftBarActive = false
                         }
 
                         for (i in 0 until bars.size-1) {
-                            bars[i].i = bars[i + 1].i
-                            bars[i].color = bars[i + 1].color
-                            bars[i].value = bars[i + 1].value
-                            bars[i].rect = RectF(bars[i + 1].rect)
+                            bars[i].copy(bars[i+1])
                         }
 
-                        bars[bars.size - 1].i = barRight.i
-                        bars[bars.size - 1].color = barRight.color
-                        bars[bars.size - 1].value = barRight.value
-                        bars[bars.size - 1].rect = RectF(barRight.rect)
+                        bars[bars.size - 1].copy(barRight)
                         isRightBarActive = false
 
                         if (bars[bars.size - 1].i < bars.size-1) {
@@ -416,7 +387,7 @@ class ChartView @JvmOverloads constructor(
                             val i = barRight.i
                             barRight.value = points[i]
                             barRight.color = if (barRight.value >= limit) {
-                                succesColor
+                                successColor
                             } else {
                                 defaultColor
                             }
@@ -439,7 +410,7 @@ class ChartView @JvmOverloads constructor(
                         val i = barRight.i
                         barRight.value = points[i]
                         barRight.color = if (barRight.value >= limit) {
-                            succesColor
+                            successColor
                         } else {
                             defaultColor
                         }
