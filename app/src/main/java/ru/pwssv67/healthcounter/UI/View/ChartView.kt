@@ -1,5 +1,6 @@
 package ru.pwssv67.healthcounter.UI.View
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -7,6 +8,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
@@ -14,6 +16,7 @@ import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import ru.pwssv67.healthcounter.Extensions.ChartBar
 import ru.pwssv67.healthcounter.R
+import kotlin.math.absoluteValue
 
 
 class ChartView @JvmOverloads constructor(
@@ -24,7 +27,6 @@ class ChartView @JvmOverloads constructor(
     companion object {
         val defaultPoints = ArrayList<Int>(listOf(1,2,3,4,5,6,7,8,9,10,11).reversed())
     }
-
 
     private var gestureDetector: GestureDetector
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -50,6 +52,7 @@ class ChartView @JvmOverloads constructor(
     private var isLeftBarActive = false
     private var scrollAccumulator = 0
     private var isScrolled = false
+    private var animationCounter = 1f
     var successColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
@@ -89,12 +92,31 @@ class ChartView @JvmOverloads constructor(
         if (measuredHeight > height) h = measuredHeight
         if (measuredWidth > width) w = measuredWidth
         factorHorizontal = w / (barWidth * bars.size + barSpacing * (bars.size + 1))
-        factorVertical = h / (maxValue*2).toFloat()
+
+        var max = bars[0].value
+        for (i in 1 until bars.size) {
+            if (bars[i].value>max) {
+                max = bars[i].value
+            }
+        }
+        if (isLeftBarActive) {
+            if (barLeft.value>max) max = barLeft.value
+        }
+        if (isRightBarActive) {
+            if (barRight.value>max) max = barRight.value
+        }
+
+        if (max <= 0) max = limit
+        factorVertical = h / (max*2).toFloat()
+        Log.e("fac max", "$factorVertical $max")
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (!isValueSet) setBars()
+        if (!isValueSet) {
+            setBars()
+            if(!this.isInEditMode) animateBars()
+        }
         drawLimitLine(canvas)
         drawBars(canvas)
         drawValue(canvas)
@@ -125,6 +147,9 @@ class ChartView @JvmOverloads constructor(
     private fun drawBars(canvas: Canvas?) {
         for (i in bars.indices) {
             paint.color = bars[i].color
+            var top = height - (bars[i].value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
+            if (bars[i].rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  bars[i].rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
+            bars[i].rect.top = top
             canvas?.drawRoundRect(
                 bars[i].rect,
                 rounding * factorHorizontal / 1.5f,
@@ -132,8 +157,12 @@ class ChartView @JvmOverloads constructor(
                 bars[i].paint
             )
         }
+
         if (isLeftBarActive) {
             paint.color = barLeft.color
+            var top = height - (barLeft.value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
+            if (barLeft.rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  barLeft.rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
+            barLeft.rect.top = top
             canvas?.drawRoundRect(
                 barLeft.rect,
                 rounding * factorHorizontal / 1.5f,
@@ -144,6 +173,9 @@ class ChartView @JvmOverloads constructor(
 
         if (isRightBarActive) {
             paint.color = barRight.color
+            var top = height - (barRight.value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
+            if (barRight.rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  barRight.rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
+            barRight.rect.top = top
             canvas?.drawRoundRect(
                 barRight.rect,
                 rounding * factorHorizontal / 1.5f,
@@ -185,7 +217,7 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun setValues() {
-        if (points.size >=bars.size) {
+        if (points.size >= bars.size) {
             for (i in (points.size-1) downTo (points.size-bars.size)) {
                 val barNumber = bars.size - points.size + i
                 bars[barNumber].value = points[i]
@@ -429,12 +461,24 @@ class ChartView @JvmOverloads constructor(
                 }
             }
         }
+        setFactors()
         invalidate()
+        //invalidate()
         isScrolled = false
     }
 
-    fun animateBars() {
-
+    fun animateBars(length:Long = 500) {
+        val animator = ValueAnimator.ofFloat(0f,1f)
+        animator.duration = length
+        animator.addUpdateListener {
+            animationCounter = it.animatedValue as Float
+            if (it.animatedValue as Float > 0.9f) {
+                isScrolled = false
+            }
+            invalidate()
+        }
+        isScrolled = true
+        animator.start()
     }
 
     fun notifyDataSetChanged() {
