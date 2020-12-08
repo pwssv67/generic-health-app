@@ -16,6 +16,7 @@ import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import ru.pwssv67.healthcounter.Extensions.ChartBar
 import ru.pwssv67.healthcounter.R
+import java.time.Duration
 import kotlin.math.absoluteValue
 
 
@@ -108,7 +109,6 @@ class ChartView @JvmOverloads constructor(
 
         if (max <= 0) max = limit
         factorVertical = h / (max*2).toFloat()
-        Log.e("fac max", "$factorVertical $max")
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -261,7 +261,32 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun unhighlightBar() {
-        val i = bars.indexOf(highlightedBar)
+        if(highlightedBar == null) {
+            for (bar in bars) {
+                if (bar.color == accentColor) {
+                    bar.color = when {
+                        bar.value >= limit -> successColor
+                        else -> defaultColor
+                    }
+                }
+            }
+            if (isLeftBarActive && barLeft.color == accentColor) {
+                barLeft.color = when {
+                    barLeft.value >= limit -> successColor
+                    else -> defaultColor
+                }
+            }
+
+            if (isRightBarActive && barRight.color == accentColor) {
+                barRight.color = when {
+                    barRight.value >= limit -> successColor
+                    else -> defaultColor
+                }
+            }
+
+            return
+        }
+        val i = bars.indexOf(highlightedBar as ChartBar)
         if (i >= 0) {
             bars[i].color = when {
                 bars[i].value >= limit -> successColor
@@ -272,20 +297,25 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun onTouch(x: Float, y:Float) {
-        val bar = highlightedBar
-        if (bar!=null) {
+        val thisBar = highlightedBar
+        if (thisBar!=null) {
             if (RectF(
-                    bar.rect.left - barSpacing * factorHorizontal / 2,
+                    thisBar.rect.left - barSpacing * factorHorizontal / 2,
                     paddingBottom * factorVertical,
-                    bar.rect.right + barSpacing * factorHorizontal / 2,
-                    bar.rect.bottom
+                    thisBar.rect.right + barSpacing * factorHorizontal / 2,
+                    thisBar.rect.bottom
                 ).contains(x,y)) {
                     return
                 }
         }
 
+        unhighlightBar()
+
         for (bar in bars) {
-            val rect = RectF(bar.rect.left-barSpacing*factorHorizontal/2, paddingBottom*factorVertical, bar.rect.right+barSpacing*factorHorizontal/2, bar.rect.bottom)
+            val rect = RectF(bar.rect.left-barSpacing*factorHorizontal/2,
+                paddingBottom*factorVertical,
+                bar.rect.right+barSpacing*factorHorizontal/2,
+                bar.rect.bottom)
             if (rect.contains(x,y)) {
                 bar.color = accentColor
                 highlightedBar = bar
@@ -315,6 +345,7 @@ class ChartView @JvmOverloads constructor(
         unhighlightBar()
         if (isScrolled) return
         isScrolled = true
+        val tempFactor = factorVertical
         if (x<0) { // swiping right, must show left
             if (points.size > barsAmount && bars[0].i != 0) {
                 for (bar in bars) {
@@ -361,6 +392,8 @@ class ChartView @JvmOverloads constructor(
                             barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
                             barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
                             isLeftBarActive = true
+                            setFactors()
+                            animateFactorChange(tempFactor, factorVertical)
                         }
                     }
 
@@ -381,11 +414,14 @@ class ChartView @JvmOverloads constructor(
                         barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
                         barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
                         isLeftBarActive = true
+                        setFactors()
+                        animateFactorChange(tempFactor, factorVertical)
                     }
                 }
             }
-        } else {
 
+
+        } else {
             if (points.size > barsAmount && bars[bars.size-1].i != points.size-1) {
                 for (bar in bars) {
                     bar.rect.left -= x
@@ -399,7 +435,7 @@ class ChartView @JvmOverloads constructor(
 
 
                 if (bars[bars.size - 1].i <= points.size-2) {
-                    if ((bars[0].rect.right <= 0) && isRightBarActive ) {
+                    if ((bars[0].rect.right <= 0) && isRightBarActive) {
                         scrollAccumulator = 0
 
                         if (isLeftBarActive) {
@@ -434,6 +470,8 @@ class ChartView @JvmOverloads constructor(
                             barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
                             barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
                             isRightBarActive = true
+                            setFactors()
+                            animateFactorChange(tempFactor, factorVertical)
                         }
                     }
 
@@ -457,17 +495,17 @@ class ChartView @JvmOverloads constructor(
                         barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
                         barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
                         isRightBarActive = true
+                        setFactors()
+                        animateFactorChange(tempFactor, factorVertical)
                     }
                 }
             }
         }
-        setFactors()
         invalidate()
-        //invalidate()
         isScrolled = false
     }
 
-    fun animateBars(length:Long = 500) {
+    private fun animateBars(length:Long = 500) {
         val animator = ValueAnimator.ofFloat(0f,1f)
         animator.duration = length
         animator.addUpdateListener {
@@ -478,6 +516,16 @@ class ChartView @JvmOverloads constructor(
             invalidate()
         }
         isScrolled = true
+        animator.start()
+    }
+
+    private fun animateFactorChange(from:Float, to:Float, duration: Long = 150) {
+        val animator = ValueAnimator.ofFloat(from, to)
+        animator.duration = duration
+        animator.addUpdateListener {
+            factorVertical = it.animatedValue as Float
+            invalidate()
+        }
         animator.start()
     }
 
