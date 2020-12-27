@@ -114,15 +114,17 @@
         android:id="@+id/tv_training"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/et_training_goal_picker"
+        android:backgroundTint="@color/primaryText"
+        android:fontFamily="@font/roboto_light"
+        android:singleLine="false"
+        android:text="@string/minutes"
+        android:textColor="@color/primaryText"
+        android:textSize="@dimen/main_button_text"
         app:layout_constraintBottom_toBottomOf="@id/et_training_goal_picker"
         app:layout_constraintLeft_toLeftOf="@id/tv_calories"
-        android:text="@string/minutes"
-        android:textSize="@dimen/main_button_text"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="@color/primaryText"
-        android:backgroundTint="@color/primaryText"
-        />
+        app:layout_constraintTop_toTopOf="@id/et_training_goal_picker"
+        app:layout_constraintRight_toRightOf="@id/tv_calories"
+        android:layout_marginLeft="16dp"/>
 
     <TextView
         android:id="@+id/tv_save"

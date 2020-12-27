@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Counter</string>
+    <string name="hello_main">Keep it up!</string>
+    <string name="whats_new">You\'re collecting goals for three days in a row!</string>
+    <string name="glasses">Glasses</string>
+    <string name="calories">Calories</string>
+    <string name="minutes">Minutes of training</string>
+    <string name="add">Add</string>
+    <string name="how_much_add">How much to add?</string>
+    <string name="how_much_subtract">How much to subtract?</string>
+    <string name="see_history">See history</string>
+    <string name="your_history">Your history</string>
+    <string name="set_your_goals">Set your goals</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="today">Today</string>
+</resources>

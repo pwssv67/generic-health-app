@@ -13,6 +13,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.pwssv67.healthcounter.UI.Dialogs.AddDialog
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     private lateinit var showHistory: ImageView
     private lateinit var settingsButton:ImageView
     private lateinit var helpButton: ImageView
+    lateinit var mAdView:AdView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
     var isGoalReachedCalories = false
@@ -59,6 +63,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         initViewModel()
         loadData()
 
+        MobileAds.initialize(this) {}
+
+        mAdView = av_ad_view
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
     }
 
     override fun onResume() {

@@ -1,11 +1,9 @@
 package ru.pwssv67.healthcounter.UI.View
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.Typeface
+import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
@@ -13,6 +11,8 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import androidx.core.content.res.ResourcesCompat
 import ru.pwssv67.healthcounter.Extensions.ChartBar
 import ru.pwssv67.healthcounter.R
@@ -26,7 +26,7 @@ class ChartView @JvmOverloads constructor(
     defStyleAttr:Int=0
 ):View(context ,attrs ,defStyleAttr) {
     companion object {
-        val defaultPoints = ArrayList<Int>(listOf(1,2,3,4,5,6,7,8,9,10,11).reversed())
+        val defaultPoints = ArrayList<Int>(listOf(4,7,3,4,2,6,7,8,9,10,11).reversed())
     }
 
     private var gestureDetector: GestureDetector
@@ -37,7 +37,7 @@ class ChartView @JvmOverloads constructor(
     var points: ArrayList<Int> = defaultPoints
     private val bars = ArrayList<ChartBar>()
     private val rounding = 3f
-    var limit:Int = 8
+    var limit:Int = 5
     private var maxValue:Int = limit+2
     private var animated = false
     private var isValueSet = false
@@ -54,6 +54,8 @@ class ChartView @JvmOverloads constructor(
     private var scrollAccumulator = 0
     private var isScrolled = false
     private var animationCounter = 1f
+    private val defaultAnimationDuration = 250L
+    private var isVerticalFactorAnimated = false
     var successColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
@@ -505,7 +507,7 @@ class ChartView @JvmOverloads constructor(
         isScrolled = false
     }
 
-    private fun animateBars(length:Long = 500) {
+    private fun animateBars(length:Long = 400) {
         val animator = ValueAnimator.ofFloat(0f,1f)
         animator.duration = length
         animator.addUpdateListener {
@@ -519,13 +521,19 @@ class ChartView @JvmOverloads constructor(
         animator.start()
     }
 
-    private fun animateFactorChange(from:Float, to:Float, duration: Long = 150) {
+    private fun animateFactorChange(from:Float, to:Float, duration: Long = defaultAnimationDuration) {
+        if (isVerticalFactorAnimated) return
         val animator = ValueAnimator.ofFloat(from, to)
         animator.duration = duration
+        animator.interpolator = DecelerateInterpolator(3f)
         animator.addUpdateListener {
             factorVertical = it.animatedValue as Float
             invalidate()
+            if (it.animatedValue as Float >= to*0.99) {
+                isVerticalFactorAnimated = false
+            }
         }
+        isVerticalFactorAnimated = true
         animator.start()
     }
 

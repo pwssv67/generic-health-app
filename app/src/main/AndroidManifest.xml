@@ -11,14 +11,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".UI.Activity.ProfileActivity"></activity>
-        <activity android:name=".UI.Activity.HistoryActivity" />
+        <activity android:name=".UI.Activity.HistoryActivity"/>
         <activity android:name=".UI.Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- change this admob id -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7529571030028467~6128735988"
+            />
     </application>
 
 </manifest>

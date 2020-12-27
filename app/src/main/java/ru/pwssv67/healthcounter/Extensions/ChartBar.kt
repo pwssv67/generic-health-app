@@ -9,6 +9,7 @@ class ChartBar(rect: RectF, paint: Paint) {
     var paint: Paint
     var color:Int = 0
     var i:Int = -1
+    var xCoord = "0"
 
     init {
         this.rect = rect

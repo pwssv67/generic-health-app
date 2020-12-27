@@ -4,14 +4,14 @@
     <string name="whats_new">Ты выполняешь цели уже три дня подряд</string>
     <string name="glasses">Стаканов</string>
     <string name="calories">Калорий</string>
-    <string name="minutes">Минут</string>
+    <string name="minutes">Минут активности</string>
     <string name="add">Добавить</string>
     <string name="how_much_add">Сколько добавить?</string>
-    <string name="d">\@strings/minutes</string>
     <string name="how_much_subtract">Сколько убрать?</string>
     <string name="see_history">Посмотреть историю</string>
     <string name="your_history">Твоя история</string>
     <string name="set_your_goals">Настрой свои цели</string>
     <string name="save">Сохранить</string>
     <string name="edit">Редактировать</string>
+    <string name="today">Сегодня</string>
 </resources>
