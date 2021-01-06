@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -471,8 +472,15 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val rotateAnimation = ValueAnimator.ofInt(0, 720)
         rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
+        //var imageChanged = false
+        //val image = imageTraining.drawable as TransitionDrawable
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
+            //if (animation.animatedValue as Int >= 360 && !imageChanged) {
+            //    imageChanged = true
+            //    image.current.alpha = 0
+            //    image.startTransition(500)
+            //}
             //if (animation.animatedValue as Int >= 360) {
             //    imageTraining.setImageResource(R.drawable.ic_check_circle_black_24dp)
             //}
@@ -497,7 +505,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             background.setTint(animation?.animatedValue as Int)
         })
 
-        val image = getDrawable(R.drawable.ic_glass_of_water_64dp)
+        //val image = R.drawable.ic_glass_of_water_64dp
 
         val textColorFrom = getColor(R.color.backgroundColor)
         val textColorTo = getColor(R.color.primaryText)
@@ -583,8 +591,17 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val rotateAnimation = ValueAnimator.ofInt(0, -720)
         rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
+
+        //var imageChanged = false
+        //val image = imageTraining.drawable as TransitionDrawable
+        //image.isCrossFadeEnabled = true
         rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
+            //if (animation.animatedValue as Int <= -360 && !imageChanged) {
+            //    imageChanged = true
+            //    image.reverseTransition(200)
+            //    //image.current.alpha = 255
+            //}
             //if (animation.animatedValue as Int <= -360) {
             //    imageTraining.setImageResource(R.drawable.ic_fitness_64dp)
             //}

@@ -80,13 +80,10 @@
         android:id="@+id/iv_settings"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginBottom="64dp"
         android:src="@drawable/ic_tune_black_24dp"
         app:layout_constraintBottom_toTopOf="@id/av_ad_view"
-        app:layout_constraintRight_toRightOf="@id/v_training_background"
-        app:layout_constraintTop_toBottomOf="@id/v_training_background"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        />
+        app:layout_constraintRight_toRightOf="@id/v_training_background" />
 
     <ImageView
         android:id="@+id/iv_drink_image"
@@ -101,19 +98,21 @@
 
     <View
         android:id="@+id/v_drink_background"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
         android:layout_height="96dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mainscreen_snippet_background"
+        android:elevation="@dimen/default_elevation"
+        android:paddingHorizontal="24dp"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintBottom_toTopOf="@id/v_eat_background"
         app:layout_constraintLeft_toRightOf="@id/iv_drink_image"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/v_header"
-        app:layout_constraintBottom_toTopOf="@id/v_eat_background"
-        android:elevation="@dimen/default_elevation"
-        android:paddingHorizontal="24dp"
-        android:layout_marginTop="20dp"
+        app:layout_constraintVertical_bias="0.19"
 
-        android:background="@drawable/mainscreen_snippet_background"
-        tools:backgroundTint="#D2f4ff"
-        />
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:backgroundTint="#D2f4ff" />
 
 
     <ImageView
@@ -138,8 +137,8 @@
         android:textSize="@dimen/main_counter_text"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_drink_background"
-        app:layout_constraintLeft_toRightOf="@id/v_drink_background"
-        app:layout_constraintRight_toLeftOf="@id/v_drink_background"
+        app:layout_constraintLeft_toLeftOf="@id/v_drink_background"
+        app:layout_constraintRight_toRightOf="@id/v_drink_background"
         app:layout_constraintTop_toTopOf="@id/v_drink_background"
         android:textColor="@color/secondaryText"
         android:fontFamily="@font/roboto_light"
@@ -171,7 +170,7 @@
 
     <View
         android:id="@+id/v_eat_background"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
         android:layout_height="96dp"
         app:layout_constraintLeft_toRightOf="@id/iv_eat_image"
         app:layout_constraintRight_toRightOf="parent"
@@ -179,7 +178,8 @@
         app:layout_constraintBottom_toTopOf="@id/v_training_background"
         android:elevation="@dimen/default_elevation"
         android:paddingHorizontal="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp"
         android:background="@drawable/mainscreen_snippet_background"
         tools:backgroundTint="#D2f4ff"
         />
@@ -207,8 +207,8 @@
         android:textSize="@dimen/main_counter_text"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_eat_background"
-        app:layout_constraintLeft_toRightOf="@id/v_eat_background"
-        app:layout_constraintRight_toLeftOf="@id/v_eat_background"
+        app:layout_constraintLeft_toLeftOf="@id/v_eat_background"
+        app:layout_constraintRight_toRightOf="@id/v_eat_background"
         app:layout_constraintTop_toTopOf="@id/v_eat_background"
         android:textColor="@color/secondaryText"
         android:fontFamily="@font/roboto_light"
@@ -239,7 +239,7 @@
 
     <View
         android:id="@+id/v_training_background"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
         android:layout_height="96dp"
         app:layout_constraintLeft_toRightOf="@id/iv_training_image"
         app:layout_constraintRight_toRightOf="parent"
@@ -247,7 +247,9 @@
         app:layout_constraintBottom_toTopOf="@id/iv_settings"
         android:elevation="@dimen/default_elevation"
         android:paddingHorizontal="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp"
+
         android:background="@drawable/mainscreen_snippet_background"
         tools:backgroundTint="#D2f4ff"
         />
@@ -274,8 +276,8 @@
         android:textSize="@dimen/main_counter_text"
         android:elevation="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/v_training_background"
-        app:layout_constraintLeft_toRightOf="@id/v_training_background"
-        app:layout_constraintRight_toLeftOf="@id/v_training_background"
+        app:layout_constraintLeft_toLeftOf="@id/v_training_background"
+        app:layout_constraintRight_toRightOf="@id/v_training_background"
         app:layout_constraintTop_toTopOf="@id/v_training_background"
         android:textColor="@color/secondaryText"
         android:fontFamily="@font/roboto_light"
