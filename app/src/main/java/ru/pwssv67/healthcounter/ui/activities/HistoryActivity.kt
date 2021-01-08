@@ -1,31 +1,27 @@
-package ru.pwssv67.healthcounter.UI.Activity
+package ru.pwssv67.healthcounter.ui.activities
 
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_history.*
-import ru.pwssv67.healthcounter.UI.Adapters.HistoryAdapter
-import ru.pwssv67.healthcounter.Extensions.DayStats
-import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.extensions.DayStats
+import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.R
-import ru.pwssv67.healthcounter.UI.View.ChartView
-import ru.pwssv67.healthcounter.ViewModels.HistoryViewModel
+import ru.pwssv67.healthcounter.ui.views.ChartView
+import ru.pwssv67.healthcounter.viewModels.HistoryViewModel
 
 
 class HistoryActivity : AppCompatActivity(){
 
-    lateinit var chartGlasses:ChartView
-    lateinit var chartCalories:ChartView
-    lateinit var chartTraining:ChartView
-    lateinit var profile: Profile
-    val arrayGlasses = ArrayList<Int>()
-    val arrayCalories = ArrayList<Int>()
-    val arrayTraining = ArrayList<Int>()
+    private lateinit var chartGlasses:ChartView
+    private lateinit var chartCalories:ChartView
+    private lateinit var chartTraining:ChartView
+    private lateinit var profile: Profile
+    private val arrayGlasses = ArrayList<Int>()
+    private val arrayCalories = ArrayList<Int>()
+    private val arrayTraining = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

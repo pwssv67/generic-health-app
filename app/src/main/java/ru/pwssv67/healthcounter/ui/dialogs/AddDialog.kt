@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.UI.Dialogs
+package ru.pwssv67.healthcounter.ui.dialogs
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -12,14 +12,14 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import ru.pwssv67.healthcounter.R
 
-class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragment() {
+class AddDialog(private val isFood:Boolean = true, private val isAdd:Boolean = true):DialogFragment() {
 
-    lateinit var addButton: TextView
-    lateinit var input: EditText
-    lateinit var caption: TextView
-    lateinit var headerCaption: TextView
+    private lateinit var addButton: TextView
+    private lateinit var input: EditText
+    private lateinit var caption: TextView
+    private lateinit var headerCaption: TextView
 
-    lateinit var mListener: AddDialogListener
+    private lateinit var mListener: AddDialogListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,46 +29,40 @@ class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragm
 
         val view =  inflater.inflate(R.layout.add_dialog, container, false)
         if(dialog!=null && dialog?.window != null) {
-            getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
-            getDialog()?.window?.requestFeature(Window.FEATURE_NO_TITLE);
-            getDialog()?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
+            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
+            dialog?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
         }
 
         return view
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        //val view = layoutInflater.inflate(R.layout.add_dialog, null)
-        //inputCalories = et_calories_counter
-    }
-    public interface AddDialogListener{
-        public fun onDialogAddClick(dialog:DialogFragment, counter:Int, isFood: Boolean, isAdd: Boolean)
+    interface AddDialogListener{
+        fun onDialogAddClick(dialog:DialogFragment, counter:Int, isFood: Boolean, isAdd: Boolean)
 
     }
 
 
-    public override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
-        val view = inflater?.inflate(R.layout.add_dialog, null)
-        input = view?.findViewById(R.id.et_calories_counter) as EditText
-        builder.setView(view)
-        addButton = view.findViewById(R.id.tv_add_food) as TextView
+        val generalView = inflater?.inflate(R.layout.add_dialog, null)
+        input = generalView?.findViewById(R.id.et_calories_counter) as EditText
+        builder.setView(generalView)
+        addButton = generalView.findViewById(R.id.tv_add_food) as TextView
         addButton.setOnClickListener {
             mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood, isAdd)
         }
-        caption = view.findViewById(R.id.tv_add_food_calories) as TextView
+        caption = generalView.findViewById(R.id.tv_add_food_calories) as TextView
         if (!isFood){
             caption.text = getText(R.string.minutes)
         }
-        headerCaption = view.findViewById(R.id.header_caption) as TextView
+        headerCaption = generalView.findViewById(R.id.header_caption) as TextView
         if (!isAdd) {
             headerCaption.text = getText(R.string.how_much_subtract)
             addButton.text = getText(R.string.remove)
         }
-        input.setOnKeyListener{ view: View, i: Int, keyEvent: KeyEvent ->
+        input.setOnKeyListener{ _: View, i: Int, keyEvent: KeyEvent ->
             if (keyEvent.action == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
                 mListener.onDialogAddClick(this, if (input.text.isNullOrBlank() || input.text.length > 4) {0}  else {input.text.toString().toInt()}, isFood, isAdd)
                 true

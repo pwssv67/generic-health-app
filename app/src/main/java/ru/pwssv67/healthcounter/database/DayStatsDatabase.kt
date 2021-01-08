@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.Database
+package ru.pwssv67.healthcounter.database
 
 import android.content.Context
 import androidx.room.Database
@@ -8,8 +8,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.pwssv67.healthcounter.Repositories.DayStatsRepository
-import ru.pwssv67.healthcounter.Extensions.DayStats
+import ru.pwssv67.healthcounter.repositories.DayStatsRepository
+import ru.pwssv67.healthcounter.extensions.DayStats
 
 @Database(entities = [DayStats::class], version = 1)
 abstract class DayStatsDatabase : RoomDatabase() {
@@ -38,14 +38,14 @@ abstract class DayStatsDatabase : RoomDatabase() {
         // same time.
         @Volatile
         private var INSTANCE: DayStatsDatabase? = null
-        val MIGRATION_1_2 = object : Migration(1, 2) {
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE `dayStats_database` (`glasses` INTEGER,`calories` INTEGER, `training` INTEGER, `day` TEXT, " +
                         "PRIMARY KEY(`day`))")
             }
         }
 
-        public var Repository: DayStatsRepository? = null
+        var Repository: DayStatsRepository? = null
 
         fun getDatabase(
             context: Context,

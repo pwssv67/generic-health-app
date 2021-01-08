@@ -1,19 +1,17 @@
-package ru.pwssv67.healthcounter.UI.Dialogs
+package ru.pwssv67.healthcounter.ui.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.service.autofill.TextValueSanitizer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import ru.pwssv67.healthcounter.Extensions.Goal
-import ru.pwssv67.healthcounter.Extensions.InfoPurpose
+import ru.pwssv67.healthcounter.extensions.InfoPurpose
 import ru.pwssv67.healthcounter.R
 
 class InfoDialog(val purpose:InfoPurpose):DialogFragment() {
@@ -25,9 +23,9 @@ class InfoDialog(val purpose:InfoPurpose):DialogFragment() {
     ): View? {
         val view = inflater.inflate(R.layout.info_dialog, container, false)
         if (dialog!=null && dialog?.window != null) {
-            getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            getDialog()?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-            getDialog()?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
+            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
+            dialog?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
         }
         return view
         //return super.onCreateView(inflater, container, savedInstanceState)

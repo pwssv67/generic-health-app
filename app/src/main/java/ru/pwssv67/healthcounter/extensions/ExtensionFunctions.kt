@@ -1,11 +1,8 @@
-package ru.pwssv67.healthcounter.Extensions
+package ru.pwssv67.healthcounter.extensions
 
-import android.app.Activity
 import android.content.Context
 import android.view.View
-import android.view.Window
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import ru.pwssv67.healthcounter.App
 
 fun showKeyboard(v:View) {

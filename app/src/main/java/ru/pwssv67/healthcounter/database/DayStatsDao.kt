@@ -1,12 +1,11 @@
-package ru.pwssv67.healthcounter.Database
+package ru.pwssv67.healthcounter.database
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
-import ru.pwssv67.healthcounter.Extensions.DayStats
+import ru.pwssv67.healthcounter.extensions.DayStats
 
 @Dao
 interface DayStatsDao {

@@ -1,9 +1,9 @@
-package ru.pwssv67.healthcounter.Repositories
+package ru.pwssv67.healthcounter.repositories
 
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import ru.pwssv67.healthcounter.App
-import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.extensions.Profile
 
 object PreferencesRepository{
 

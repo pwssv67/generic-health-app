@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.Extensions
+package ru.pwssv67.healthcounter.extensions
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

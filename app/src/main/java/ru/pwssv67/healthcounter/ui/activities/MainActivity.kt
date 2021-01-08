@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.UI.Activity
+package ru.pwssv67.healthcounter.ui.activities
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
@@ -16,16 +16,15 @@ import androidx.lifecycle.Observer
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.pwssv67.healthcounter.UI.Dialogs.AddDialog
-import ru.pwssv67.healthcounter.Extensions.DayStats
-import ru.pwssv67.healthcounter.Extensions.Goal
-import ru.pwssv67.healthcounter.Extensions.InfoPurpose
-import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.ui.dialogs.AddDialog
+import ru.pwssv67.healthcounter.extensions.DayStats
+import ru.pwssv67.healthcounter.extensions.Goal
+import ru.pwssv67.healthcounter.extensions.InfoPurpose
+import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.R
-import ru.pwssv67.healthcounter.UI.Dialogs.InfoDialog
-import ru.pwssv67.healthcounter.ViewModels.DayViewModel
+import ru.pwssv67.healthcounter.ui.dialogs.InfoDialog
+import ru.pwssv67.healthcounter.viewModels.DayViewModel
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
@@ -238,12 +237,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun minusTraining() {
-        val newFragment = AddDialog(false, false)
+        val newFragment = AddDialog(isFood = false, isAdd = false)
         newFragment.show(supportFragmentManager, "")
     }
 
     private fun minusEat() {
-        val newFragment = AddDialog(true, false)
+        val newFragment = AddDialog(isFood = true, isAdd = false)
         newFragment.show(supportFragmentManager, "")
     }
 
@@ -331,7 +330,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         viewModel.saveDayStatsData(day)
     }
 
-    fun goalReached(goalType: String) {
+    private fun goalReached(goalType: String) {
         when (goalType){
             Goal.GLASSES.goalType -> goalReachedGlasses()
             Goal.CALORIES.goalType -> goalReachedCalories()
@@ -347,12 +346,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val background = drinkBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         //val alphaAnimation = ValueAnimator.ofInt(0xFF, 0x00)
-        val image = imageDrink.drawable
         //alphaAnimation.duration = 500
         //alphaAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation ->
         //    drinkAdd.imageAlpha = alphaAnimation.animatedValue as Int
@@ -365,31 +363,31 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val minusImage = drinkMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             drinkCounterView.setTextColor(animation?.animatedValue as Int)
             //image.setTint(animation.animatedValue as Int)
             addImage.setTint(animation.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
-        })
+        }
 
         val scale = 1.0.toFloat()
         Log.e("", "$scale")
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
-        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.scaleX = animation?.animatedValue as Float
             imageDrink.scaleY = animation.animatedValue as Float
-        })
+        }
 
         val rotateAnimation = ValueAnimator.ofInt(0, 720)
         rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
-        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        rotateAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
             //if (animation.animatedValue as Int >= 360) {
             //    imageDrink.setImageResource(R.drawable.ic_check_circle_black_24dp)
             //}
-        })
+        }
 
         //alphaAnimation.start()
         colorAnimation.start()
@@ -408,9 +406,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val background = caloriesBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         val textColorFrom = getColor(R.color.primaryText)
         val textColorTo = getColor(R.color.backgroundColor)
@@ -418,16 +416,16 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val minusImage = eatMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             eatCounterView.setTextColor(animation?.animatedValue as Int)
-        })
+        }
 
         val buttonColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         buttonColorAnimation.duration = ANIMATION_SHORT
-        buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        buttonColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
-        })
+        }
 
         textColorAnimation.start()
         buttonColorAnimation.start()
@@ -442,9 +440,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         colorAnimation.duration = ANIMATION_LONG
         colorAnimation.interpolator = OvershootInterpolator()
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         //val alphaAnimation = ValueAnimator.ofInt(0xFF, 0x00)
         //alphaAnimation.duration = 500
@@ -457,27 +455,27 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val textColorTo = getColor(R.color.backgroundColor)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation.animatedValue as Int)
             trainingCounterView.setTextColor(animation.animatedValue as Int)
-        })
+        }
 
 
         val scale = imageTraining.scaleX
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
-        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.scaleX = animation?.animatedValue as Float
             imageTraining.scaleY = animation.animatedValue as Float
-        })
+        }
 
         val rotateAnimation = ValueAnimator.ofInt(0, 720)
         rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
         //var imageChanged = false
         //val image = imageTraining.drawable as TransitionDrawable
-        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        rotateAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
             //if (animation.animatedValue as Int >= 360 && !imageChanged) {
             //    imageChanged = true
@@ -487,7 +485,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             //if (animation.animatedValue as Int >= 360) {
             //    imageTraining.setImageResource(R.drawable.ic_check_circle_black_24dp)
             //}
-        })
+        }
 
         textColorAnimation.start()
         //alphaAnimation.start()
@@ -504,9 +502,9 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         val background = drinkBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         //val image = R.drawable.ic_glass_of_water_64dp
 
@@ -516,35 +514,35 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val minusImage = drinkMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             drinkCounterView.setTextColor(animation?.animatedValue as Int)
             minusImage.setTint(animation.animatedValue as Int)
-        })
+        }
 
         val addColorTo = getColor(R.color.colorPrimaryDark)
         val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom,addColorTo)
         addColorAnimation.duration = ANIMATION_SHORT
-        addColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        addColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         val scale = 1.0.toFloat()
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
-        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.scaleX = animation?.animatedValue as Float
             imageDrink.scaleY = animation.animatedValue as Float
-        })
+        }
 
         val rotateAnimation = ValueAnimator.ofInt(0, -720)
         rotateAnimation.duration = ANIMATION_LONG
         rotateAnimation.interpolator = OvershootInterpolator()
-        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        rotateAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.rotation = (animation?.animatedValue as Int).toFloat()
             //if (animation.animatedValue as Int <= -360) {
             //    imageDrink.setImageResource(R.drawable.ic_glass_of_water_64dp)
             //}
-        })
+        }
 
         colorAnimation.start()
         textColorAnimation.start()
@@ -562,34 +560,34 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val background = trainingBackground.background as Drawable
 
         colorAnimation.duration = ANIMATION_LONG
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         val textColorFrom = getColor(R.color.backgroundColor)
         val textColorTo = getColor(R.color.primaryText)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
-        textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             //trainingAdd.drawable.setTint(animation?.animatedValue as Int)
             trainingMinus.drawable.setTint(animation?.animatedValue as Int)
             trainingCounterView.setTextColor(animation.animatedValue as Int)
-        })
+        }
 
         val addColorTo = getColor(R.color.colorPrimaryDark)
         val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
         addColorAnimation.duration = ANIMATION_SHORT
-        addColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        addColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             trainingAdd.drawable.setTint(animation?.animatedValue as Int)
-        })
+        }
 
         val scale = imageTraining.scaleX
         val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
-        scaleAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.scaleX = animation?.animatedValue as Float
             imageTraining.scaleY = animation.animatedValue as Float
-        })
+        }
 
         val rotateAnimation = ValueAnimator.ofInt(0, -720)
         rotateAnimation.duration = ANIMATION_LONG
@@ -598,7 +596,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         //var imageChanged = false
         //val image = imageTraining.drawable as TransitionDrawable
         //image.isCrossFadeEnabled = true
-        rotateAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        rotateAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.rotation = (animation?.animatedValue as Int).toFloat()
             //if (animation.animatedValue as Int <= -360 && !imageChanged) {
             //    imageChanged = true
@@ -608,7 +606,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             //if (animation.animatedValue as Int <= -360) {
             //    imageTraining.setImageResource(R.drawable.ic_fitness_64dp)
             //}
-        })
+        }
 
         colorAnimation.start()
         textColorAnimation.start()
@@ -624,39 +622,39 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         val background = caloriesBackground.background as Drawable
         colorAnimation.duration = ANIMATION_LONG
-        colorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+        colorAnimation.addUpdateListener { animation: ValueAnimator? ->
             background.setTint(animation?.animatedValue as Int)
-        })
+        }
 
 
-            val textColorFrom = getColor(R.color.backgroundColor)
+        val textColorFrom = getColor(R.color.backgroundColor)
             val textColorTo = getColor(R.color.primaryText)
             val addImage = eatAdd.drawable
             val minusImage = eatMinus.drawable
             val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
             textColorAnimation.duration = ANIMATION_SHORT
 
-            textColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
                 eatCounterView.setTextColor(animation?.animatedValue as Int)
-            })
+            }
 
-            val buttonColorAnimation =
+        val buttonColorAnimation =
                 ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
             buttonColorAnimation.duration = ANIMATION_SHORT
-            buttonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            buttonColorAnimation.addUpdateListener { animation: ValueAnimator? ->
                 //addImage.setTint(animation?.animatedValue as Int)
                 minusImage.setTint(animation?.animatedValue as Int)
-            })
+            }
 
-            val addColorTo = getColor(R.color.colorPrimaryDark)
+        val addColorTo = getColor(R.color.colorPrimaryDark)
             val addButtonColorAnimation =
                 ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
             addButtonColorAnimation.duration = ANIMATION_SHORT
-            addButtonColorAnimation.addUpdateListener(ValueAnimator.AnimatorUpdateListener { animation: ValueAnimator? ->
+            addButtonColorAnimation.addUpdateListener { animation: ValueAnimator? ->
                 addImage.setTint(animation?.animatedValue as Int)
-            })
+            }
 
-            textColorAnimation.start()
+        textColorAnimation.start()
             buttonColorAnimation.start()
             addButtonColorAnimation.start()
         colorAnimation.start()

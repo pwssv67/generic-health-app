@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:elevation="0dp"
-    tools:context=".UI.Activity.MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
     <View
         android:id="@+id/v_header"

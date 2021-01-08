@@ -1,23 +1,18 @@
-package ru.pwssv67.healthcounter.UI.View
+package ru.pwssv67.healthcounter.ui.views
 
-import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.Interpolator
 import androidx.core.content.res.ResourcesCompat
-import ru.pwssv67.healthcounter.Extensions.ChartBar
+import ru.pwssv67.healthcounter.extensions.ChartBar
 import ru.pwssv67.healthcounter.R
-import java.time.Duration
-import kotlin.math.absoluteValue
 
 
 class ChartView @JvmOverloads constructor(

@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.ViewModels
+package ru.pwssv67.healthcounter.viewModels
 
 import android.app.Application
 import android.util.Log
@@ -6,11 +6,11 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.pwssv67.healthcounter.App
-import ru.pwssv67.healthcounter.Database.DayStatsDatabase
-import ru.pwssv67.healthcounter.Repositories.DayStatsRepository
-import ru.pwssv67.healthcounter.Extensions.DayStats
-import ru.pwssv67.healthcounter.Extensions.Profile
-import ru.pwssv67.healthcounter.Repositories.PreferencesRepository
+import ru.pwssv67.healthcounter.database.DayStatsDatabase
+import ru.pwssv67.healthcounter.repositories.DayStatsRepository
+import ru.pwssv67.healthcounter.extensions.DayStats
+import ru.pwssv67.healthcounter.extensions.Profile
+import ru.pwssv67.healthcounter.repositories.PreferencesRepository
 import java.time.LocalDate
 
 class DayViewModel(application: Application): AndroidViewModel(application) {
@@ -18,8 +18,6 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
     private val preferencesRepository =
         PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
-
-
 
 
     init {

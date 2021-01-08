@@ -1,13 +1,13 @@
-package ru.pwssv67.healthcounter.Repositories
+package ru.pwssv67.healthcounter.repositories
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import ru.pwssv67.healthcounter.Database.DayStatsDao
-import ru.pwssv67.healthcounter.Extensions.DayStats
+import ru.pwssv67.healthcounter.database.DayStatsDao
+import ru.pwssv67.healthcounter.extensions.DayStats
 import java.time.LocalDate
 import java.util.concurrent.Executor
 
-class DayStatsRepository (val dao:DayStatsDao) {
+class DayStatsRepository (private val dao:DayStatsDao) {
     val dayStatsData:LiveData<DayStats> = dao.load(LocalDate.now().toString())
     val allDayStats = dao.loadAll()
     private val executor = Executor { Thread(it).start() }
@@ -15,6 +15,7 @@ class DayStatsRepository (val dao:DayStatsDao) {
     init{
 
     }
+
     suspend fun saveDayStats(dayStats: DayStats) {
        dao.save(dayStats)
         Log.e("rgr", "fefegehewgdsg ${dayStats.day} ${dayStats.glasses}")

@@ -29,7 +29,7 @@
         android:backgroundTint="@color/primaryText"
         />
 
-    <ru.pwssv67.healthcounter.UI.View.ChartView
+    <ru.pwssv67.healthcounter.ui.views.ChartView
         android:id="@+id/glasses_chart_custom"
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -42,7 +42,7 @@
         android:elevation="@dimen/default_elevation"
         />
 
-        <ru.pwssv67.healthcounter.UI.View.ChartView
+        <ru.pwssv67.healthcounter.ui.views.ChartView
             android:id="@+id/calories_chart_custom"
             android:layout_width="match_parent"
             android:layout_height="180dp"
@@ -56,7 +56,7 @@
             android:layout_marginTop="8dp"
             />
 
-        <ru.pwssv67.healthcounter.UI.View.ChartView
+        <ru.pwssv67.healthcounter.ui.views.ChartView
             android:id="@+id/training_chart_custom"
             android:layout_width="match_parent"
             android:layout_height="180dp"

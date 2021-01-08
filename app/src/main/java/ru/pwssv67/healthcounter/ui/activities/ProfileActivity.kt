@@ -1,4 +1,4 @@
-package ru.pwssv67.healthcounter.UI.Activity
+package ru.pwssv67.healthcounter.ui.activities
 
 import android.animation.ValueAnimator
 import android.graphics.drawable.TransitionDrawable
@@ -7,21 +7,21 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_profile.*
-import ru.pwssv67.healthcounter.Extensions.Profile
+import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.R
-import ru.pwssv67.healthcounter.ViewModels.DayViewModel
+import ru.pwssv67.healthcounter.viewModels.DayViewModel
 
 class ProfileActivity : AppCompatActivity() {
-    lateinit var saveButton: TextView
-    lateinit var drinkGoal:EditText
-    lateinit var caloriesGoal:EditText
-    lateinit var trainingGoal:EditText
-    lateinit var viewModel: DayViewModel
-    lateinit var profile: Profile
-    var isEditMode = false
+    private lateinit var saveButton: TextView
+    private lateinit var drinkGoal:EditText
+    private lateinit var caloriesGoal:EditText
+    private lateinit var trainingGoal:EditText
+    private lateinit var viewModel: DayViewModel
+    private lateinit var profile: Profile
+    private var isEditMode = false
 
     companion object {
-        const val IS_EDIT_MODE = "IS_EDIT_MODE"
+        private const val IS_EDIT_MODE = "IS_EDIT_MODE"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,20 +1,13 @@
-package ru.pwssv67.healthcounter.Extensions
+package ru.pwssv67.healthcounter.extensions
 
 import android.graphics.Paint
 import android.graphics.RectF
 
-class ChartBar(rect: RectF, paint: Paint) {
-    var rect: RectF
+class ChartBar(var rect: RectF, var paint: Paint) {
     var value:Int = 0
-    var paint: Paint
     var color:Int = 0
     var i:Int = -1
     var xCoord = "0"
-
-    init {
-        this.rect = rect
-        this.paint = paint
-    }
 
     fun copy(chartBar: ChartBar) {
          with (this.rect) {

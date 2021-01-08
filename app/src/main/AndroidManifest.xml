@@ -10,9 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.Activity.ProfileActivity"></activity>
-        <activity android:name=".UI.Activity.HistoryActivity"/>
-        <activity android:name=".UI.Activity.MainActivity">
+        <activity android:name=".ui.activities.ProfileActivity"></activity>
+        <activity android:name=".ui.activities.HistoryActivity"/>
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

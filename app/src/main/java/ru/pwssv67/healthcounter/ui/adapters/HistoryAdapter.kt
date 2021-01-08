@@ -1,11 +1,11 @@
-package ru.pwssv67.healthcounter.UI.Adapters
+package ru.pwssv67.healthcounter.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.pwssv67.healthcounter.Extensions.DayStats
+import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.R
 
 class HistoryAdapter:RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
