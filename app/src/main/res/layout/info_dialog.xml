@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/add_dialog_rounded_bg"
+    android:padding="24dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background"
+        android:paddingHorizontal="24dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_info_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:fontFamily="@font/roboto_light"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/main_button_text"
+            tools:text="@string/lorem_ipsum"
+            android:layout_marginVertical="24dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ok"
+            android:textSize="@dimen/main_button_text"
+            android:textColor="@color/primaryText"
+            android:fontFamily="@font/roboto_light"
+            android:paddingHorizontal="32dp"
+            android:layout_marginBottom="16dp"
+            android:paddingVertical="8dp"
+            android:background="@drawable/border_button_background"
+            android:elevation="@dimen/default_elevation"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

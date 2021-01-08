@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Counter</string>
+    <string name="hello_main">Так держать!</string>
+    <string name="whats_new">Ты выполняешь цели уже три дня подряд</string>
+    <string name="glasses">Стаканов</string>
+    <string name="calories">Калорий</string>
+    <string name="minutes">Минут активности</string>
+    <string name="add">Добавить</string>
+    <string name="how_much_add">Сколько добавить?</string>
+    <string name="how_much_subtract">Сколько убрать?</string>
+    <string name="see_history">Посмотреть историю</string>
+    <string name="your_history">Твоя история</string>
+    <string name="set_your_goals">Настрой свои цели</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
+    <string name="today">Сегодня</string>
+    <string name="glasses_info">Вода важна для всего живого и бла-бла-бла</string>
+    <string name="ok">Хорошо</string>
+    <string name="calories_info">Считать калории важно и бла-бла-бла</string>
+    <string name="training_info">Чтобы оставаться здоровым необходимо поддерживать физическую активность, и активно двигаться хотя бы 15-30 минут в день</string>
+    <string name="remove">Убрать</string>
+</resources>

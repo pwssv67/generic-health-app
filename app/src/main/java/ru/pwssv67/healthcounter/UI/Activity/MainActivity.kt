@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.TransitionDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,8 +21,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 import ru.pwssv67.healthcounter.UI.Dialogs.AddDialog
 import ru.pwssv67.healthcounter.Extensions.DayStats
 import ru.pwssv67.healthcounter.Extensions.Goal
+import ru.pwssv67.healthcounter.Extensions.InfoPurpose
 import ru.pwssv67.healthcounter.Extensions.Profile
 import ru.pwssv67.healthcounter.R
+import ru.pwssv67.healthcounter.UI.Dialogs.InfoDialog
 import ru.pwssv67.healthcounter.ViewModels.DayViewModel
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     private lateinit var imageDrink: ImageView
     private lateinit var imageTraining: ImageView
     private lateinit var caloriesBackground: View
-    private lateinit var eatImage: ImageView
+    private lateinit var imageCalories: ImageView
     private lateinit var showHistory: ImageView
     private lateinit var settingsButton:ImageView
     private lateinit var helpButton: ImageView
@@ -153,12 +154,10 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         imageDrink = iv_drink_image
         imageTraining = iv_training_image
         caloriesBackground = v_eat_background
-        eatImage = iv_eat_image
+        imageCalories = iv_eat_image
         showHistory = iv_show_history
         settingsButton = iv_settings
         helpButton = iv_help
-
-
 
 
         //Click Listeners
@@ -190,15 +189,15 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         // Text Views
-        drinkCounterView.setOnClickListener {
+        imageDrink.setOnClickListener {
             viewDrinks()
         }
 
-        eatCounterView.setOnClickListener {
+       imageCalories.setOnClickListener {
             viewEat()
         }
 
-        trainingCounterView.setOnClickListener {
+        imageTraining.setOnClickListener {
             viewTraining()
         }
 
@@ -219,19 +218,23 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     }
 
     private fun viewHelp() {
-        Snackbar.make(layout_main, "Скоро будет помощь, а пока ремонт", Snackbar.LENGTH_LONG).show()
+        val newFragment = InfoDialog(InfoPurpose.GENERAL)
+        newFragment.show(supportFragmentManager, "")
     }
 
     private fun viewTraining() {
-        Snackbar.make(layout_main, "Скоро будет тренировка, а пока ремонт", Snackbar.LENGTH_LONG).show()
+        val newFragment = InfoDialog(InfoPurpose.TRAINING)
+        newFragment.show(supportFragmentManager, "")
     }
 
     private fun viewEat() {
-        Snackbar.make(layout_main, "Скоро будет вкусно, а пока ремонт", Snackbar.LENGTH_LONG).show()
+        val newFragment = InfoDialog(InfoPurpose.CALORIES)
+        newFragment.show(supportFragmentManager, "")
     }
 
     private fun viewDrinks() {
-        Snackbar.make(layout_main, "Скоро будут напитки, а пока ремонт", Snackbar.LENGTH_LONG).show()
+        val newFragment = InfoDialog(InfoPurpose.GLASSES)
+        newFragment.show(supportFragmentManager, "")
     }
 
     private fun minusTraining() {

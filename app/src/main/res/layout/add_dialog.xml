@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-
     android:gravity="center"
     android:background="@drawable/add_dialog_rounded_bg"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="320dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/add_dialog_background"
+    android:background="@drawable/dialog_background"
     >
-
 
     <TextView
         android:id="@+id/header_caption"
@@ -42,9 +42,9 @@
         android:textColor="@color/primaryText"
         android:fontFamily="@font/roboto_light"
         android:textColorHint="@color/primaryText"
-
         android:hint="000"
         android:inputType="number"
+        android:imeOptions="actionDone"
         />
 
     <TextView

@@ -13,6 +13,13 @@ enum class Goal(val goalType: String){
     TRAINING("TRAINING")
 }
 
+enum class InfoPurpose(val purpose: String) {
+    GLASSES("GLASSES"),
+    CALORIES("CALORIES"),
+    TRAINING("TRAINING"),
+    GENERAL("GENERAL")
+}
+
 class Profile(var name:String, var drink_goal:Int, var training_goal:Int, var eat_goal_first:Int, var eat_goal_second:Int)
 
 

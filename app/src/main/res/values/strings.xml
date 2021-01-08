@@ -1,17 +1,23 @@
 <resources>
     <string name="app_name">Health Counter</string>
-    <string name="hello_main">Так держать!</string>
-    <string name="whats_new">Ты выполняешь цели уже три дня подряд</string>
-    <string name="glasses">Стаканов</string>
-    <string name="calories">Калорий</string>
-    <string name="minutes">Минут активности</string>
-    <string name="add">Добавить</string>
-    <string name="how_much_add">Сколько добавить?</string>
-    <string name="how_much_subtract">Сколько убрать?</string>
-    <string name="see_history">Посмотреть историю</string>
-    <string name="your_history">Твоя история</string>
-    <string name="set_your_goals">Настрой свои цели</string>
-    <string name="save">Сохранить</string>
-    <string name="edit">Редактировать</string>
-    <string name="today">Сегодня</string>
+    <string name="hello_main">Keep it up!</string>
+    <string name="whats_new">You\'re collecting goals for three days in a row!</string>
+    <string name="glasses">Glasses</string>
+    <string name="calories">Calories</string>
+    <string name="minutes">Minutes of training</string>
+    <string name="add">Add</string>
+    <string name="how_much_add">How much to add?</string>
+    <string name="how_much_subtract">How much to subtract?</string>
+    <string name="see_history">See history</string>
+    <string name="your_history">Your history</string>
+    <string name="set_your_goals">Set your goals</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="today">Today</string>
+    <string name="lorem_ipsum" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="glasses_info">Water is an essential to all living things and bla-blah-blah</string>
+    <string name="ok">OK</string>
+    <string name="calories_info">Counting your calories is essential for staying fit and blah-blah-blah</string>
+    <string name="training_info">For staying healthy it\'s really important to be active at least 15-30 minutes every day</string>
+    <string name="remove">Remove</string>
 </resources>

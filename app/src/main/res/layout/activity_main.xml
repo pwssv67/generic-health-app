@@ -80,7 +80,7 @@
         android:id="@+id/iv_settings"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="56dp"
         android:src="@drawable/ic_tune_black_24dp"
         app:layout_constraintBottom_toTopOf="@id/av_ad_view"
         app:layout_constraintRight_toRightOf="@id/v_training_background" />

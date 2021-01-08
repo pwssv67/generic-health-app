@@ -28,7 +28,7 @@ class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragm
     ): View? {
 
         val view =  inflater.inflate(R.layout.add_dialog, container, false)
-        if(dialog!=null && getDialog()?.window != null) {
+        if(dialog!=null && dialog?.window != null) {
             getDialog()?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
             getDialog()?.window?.requestFeature(Window.FEATURE_NO_TITLE);
             getDialog()?.window?.setBackgroundDrawableResource(R.drawable.add_dialog_rounded_bg)
@@ -66,6 +66,7 @@ class AddDialog(val isFood:Boolean = true, val isAdd:Boolean = true):DialogFragm
         headerCaption = view.findViewById(R.id.header_caption) as TextView
         if (!isAdd) {
             headerCaption.text = getText(R.string.how_much_subtract)
+            addButton.text = getText(R.string.remove)
         }
         input.setOnKeyListener{ view: View, i: Int, keyEvent: KeyEvent ->
             if (keyEvent.action == KeyEvent.ACTION_DOWN && i == KeyEvent.KEYCODE_ENTER) {
