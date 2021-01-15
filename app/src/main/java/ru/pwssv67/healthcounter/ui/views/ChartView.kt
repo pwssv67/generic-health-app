@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
@@ -21,22 +22,24 @@ class ChartView @JvmOverloads constructor(
     defStyleAttr:Int=0
 ):View(context ,attrs ,defStyleAttr) {
     companion object {
-        val defaultPoints = ArrayList<Int>(listOf(4,7,3,4,2,6,7,8,9,10,11).reversed())
+        val defaultPoints = ArrayList<Pair<Int, String>>(listOf(4 to "0",7 to "1",3 to "2",4 to "3",2 to "4",6 to "5",7 to "6",8 to "7",9 to "8",10 to "9",11 to "10").reversed())
     }
 
     private var gestureDetector: GestureDetector
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+    private var textPaintSecondary = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+    private var textPaintAccent = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     private val barLeft = ChartBar(RectF(0f,0f,0f,0f), paint)
     private val barRight = ChartBar(RectF(0f,0f,0f,0f), paint)
-    var points: ArrayList<Int> = defaultPoints
+    var points: ArrayList<Pair<Int, String>> = defaultPoints
     private val bars = ArrayList<ChartBar>()
     private val rounding = 3f
     var limit:Int = 5
     private var maxValue:Int = limit+2
     private var animated = false
     private var isValueSet = false
-    private var paddingBottom = 10f
+    private var paddingBottom = 70f
     private var paddingTop = 3f
     private val zeroHeight = 2f
     private var factorVertical = 50f
@@ -51,6 +54,7 @@ class ChartView @JvmOverloads constructor(
     private var animationCounter = 1f
     private val defaultAnimationDuration = 250L
     private var isVerticalFactorAnimated = false
+    private val tempRectF = RectF()
     var successColor = context.getColor(R.color.colorPrimaryDark)
     var defaultColor = context.getColor(R.color.colorPrimary)
     var accentColor = context.getColor(R.color.colorAccent)
@@ -71,13 +75,52 @@ class ChartView @JvmOverloads constructor(
         } else {
             text = "Sample"
         }
+
        gestureDetector = GestureDetector(context, MyGestureListener())
         for (i in 0 until barsAmount) {
             bars.add(ChartBar(RectF(), paint))
         }
+
+        setTextPaints(context)
     }
 
+    private fun setTextPaints(context: Context) {
+        textPaint.color = textColor
+        textPaint.textSize = textSizeInSp * resources.displayMetrics.scaledDensity
+        if (!this.isInEditMode) {
+            textPaint.typeface = Typeface.create(
+                ResourcesCompat.getFont(context, R.font.roboto_light),
+                Typeface.NORMAL
+            )
+        } else {
+            textPaint.typeface = Typeface.SANS_SERIF
+        }
+        textPaint.textAlign = Paint.Align.CENTER
 
+        textPaintSecondary.color = textColor
+        textPaintSecondary.textSize = textSizeInSp * resources.displayMetrics.scaledDensity / 2F
+        if (!this.isInEditMode) {
+            textPaintSecondary.typeface = Typeface.create(
+                ResourcesCompat.getFont(context, R.font.roboto_light),
+                Typeface.NORMAL
+            )
+        } else {
+            textPaintSecondary.typeface = Typeface.SANS_SERIF
+        }
+        textPaintSecondary.textAlign = Paint.Align.CENTER
+
+        textPaintAccent.color = successColor
+        textPaintAccent.textSize = textSizeInSp * resources.displayMetrics.scaledDensity * 0.8f
+        if (!this.isInEditMode) {
+            textPaintAccent.typeface = Typeface.create(
+                ResourcesCompat.getFont(context, R.font.roboto_light),
+                Typeface.NORMAL
+            )
+        } else {
+            textPaintAccent.typeface = Typeface.SANS_SERIF
+        }
+        textPaintAccent.textAlign = Paint.Align.CENTER
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -121,27 +164,19 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun drawText(canvas: Canvas?) {
-        textPaint.color = textColor
-        textPaint.textSize = textSizeInSp*resources.displayMetrics.scaledDensity
-        if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)}
-        else {textPaint.typeface = Typeface.SANS_SERIF}
-        textPaint.textAlign = Paint.Align.CENTER
         canvas?.drawText(text, width/2f, textPaint.textSize*1.2f, textPaint)
     }
 
     private fun drawValue(canvas: Canvas?) {
         if (highlightedBar != null) {
             val bar= highlightedBar as ChartBar
-            textPaint.color = successColor
-            textPaint.textSize = textSizeInSp*resources.displayMetrics.scaledDensity*0.8f
-            if (!this.isInEditMode) {textPaint.typeface = Typeface.create(ResourcesCompat.getFont(context, R.font.roboto_light), Typeface.NORMAL)}
-            else {textPaint.typeface = Typeface.SANS_SERIF}
-            textPaint.textAlign = Paint.Align.CENTER
-            canvas?.drawText(bar.value.toString(), width/2f, textPaint.textSize*3f, textPaint)
+            canvas?.drawText(bar.value.toString(), width/2f, textPaintAccent.textSize*3f, textPaintAccent)
         } else return
     }
 
     private fun drawBars(canvas: Canvas?) {
+
+
         for (i in bars.indices) {
             paint.color = bars[i].color
             var top = height - (bars[i].value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
@@ -153,6 +188,15 @@ class ChartView @JvmOverloads constructor(
                 rounding * factorHorizontal / 1.5f,
                 bars[i].paint
             )
+
+            if (bars[i].color != 0 && bars[i].xCoord != "0") {
+                canvas?.drawText(
+                    bars[i].xCoord,
+                    (bars[i].rect.left + bars[i].rect.right) / 2,
+                    bars[i].rect.bottom + paddingBottom / 1.5F,
+                    textPaintSecondary
+                )
+            }
         }
 
         if (isLeftBarActive) {
@@ -166,6 +210,8 @@ class ChartView @JvmOverloads constructor(
                 rounding * factorHorizontal / 1.5f,
                 barLeft.paint
             )
+
+            canvas?.drawText(barLeft.xCoord, (barLeft.rect.left + barLeft.rect.right ) / 2 , barLeft.rect.bottom + paddingBottom/1.5F, textPaintSecondary)
         }
 
         if (isRightBarActive) {
@@ -179,6 +225,8 @@ class ChartView @JvmOverloads constructor(
                 rounding * factorHorizontal / 1.5f,
                 barRight.paint
             )
+
+            canvas?.drawText(barRight.xCoord, (barRight.rect.left + barRight.rect.right ) / 2 , barRight.rect.bottom + paddingBottom/1.5F, textPaintSecondary)
         }
     }
 
@@ -217,33 +265,38 @@ class ChartView @JvmOverloads constructor(
         if (points.size >= bars.size) {
             for (i in (points.size-1) downTo (points.size-bars.size)) {
                 val barNumber = bars.size - points.size + i
-                bars[barNumber].value = points[i]
+                bars[barNumber].value = points[i].first
+                bars[barNumber].xCoord = points[i].second
                 bars[barNumber].i = i
-                if (points[i] >= limit) {
+                if (bars[barNumber].value >= limit) {
                     bars[barNumber].color = successColor
                 } else {
                     bars[barNumber].color = defaultColor
                 }
             }
         }
+
         else {
-            for (i in points.indices) {
-                bars[i].value = points.reversed()[i]
+            for (i in points.size-1 downTo 0) {
+                bars[i].value = points[i].first
+                bars[i].xCoord = points[i].second
                 bars[i].i = i
-                if (points[i] >= limit) {
+                if (bars[i].value >= limit) {
                     bars[i].color = successColor
                 } else {
                     bars[i].color = defaultColor
                 }
             }
         }
-        maxValue = points.max() ?: limit+2
+
+        maxValue = points.maxBy { it.first }?.first ?: (limit*1.2).toInt()
+
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> onTouch(event.x, event.y)
-            MotionEvent.ACTION_UP -> onUp()
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> onUp()
         }
         gestureDetector.onTouchEvent(event)
         super.onTouchEvent(event)
@@ -253,67 +306,64 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun onUp() {
-        unhighlightBar()
+        unHighlightBar()
         invalidate()
     }
 
-    private fun unhighlightBar() {
-        if(highlightedBar == null) {
-            for (bar in bars) {
-                if (bar.color == accentColor) {
-                    bar.color = when {
-                        bar.value >= limit -> successColor
-                        else -> defaultColor
-                    }
-                }
-            }
-            if (isLeftBarActive && barLeft.color == accentColor) {
-                barLeft.color = when {
-                    barLeft.value >= limit -> successColor
+    private fun unHighlightBar() {
+
+        for (bar in bars) {
+            if (bar.color == accentColor) {
+                bar.color = when {
+                    bar.value >= limit -> successColor
                     else -> defaultColor
                 }
             }
-
-            if (isRightBarActive && barRight.color == accentColor) {
-                barRight.color = when {
-                    barRight.value >= limit -> successColor
-                    else -> defaultColor
-                }
-            }
-
-            return
         }
-        val i = bars.indexOf(highlightedBar as ChartBar)
-        if (i >= 0) {
-            bars[i].color = when {
-                bars[i].value >= limit -> successColor
+
+        if (barLeft.color == accentColor) {
+            barLeft.color = when {
+                barLeft.value >= limit -> successColor
                 else -> defaultColor
             }
         }
+
+        if (barRight.color == accentColor) {
+            barRight.color = when {
+                barRight.value >= limit -> successColor
+                else -> defaultColor
+            }
+        }
+
         highlightedBar = null
     }
 
     private fun onTouch(x: Float, y:Float) {
-        val thisBar = highlightedBar
-        if (thisBar!=null) {
-            if (RectF(
-                    thisBar.rect.left - barSpacing * factorHorizontal / 2,
-                    paddingBottom * factorVertical,
-                    thisBar.rect.right + barSpacing * factorHorizontal / 2,
-                    thisBar.rect.bottom
-                ).contains(x,y)) {
+
+        if (highlightedBar != null) {
+            with(tempRectF) {
+                left = highlightedBar!!.rect.left - barSpacing * factorHorizontal / 2
+                top = paddingTop
+                right = highlightedBar!!.rect.right + barSpacing * factorHorizontal / 2
+                bottom = bars[0].rect.bottom
+            }
+
+            if (tempRectF.contains(x,y)) {
                     return
                 }
+
         }
 
-        unhighlightBar()
-
+        unHighlightBar()
         for (bar in bars) {
-            val rect = RectF(bar.rect.left-barSpacing*factorHorizontal/2,
-                paddingBottom*factorVertical,
-                bar.rect.right+barSpacing*factorHorizontal/2,
-                bar.rect.bottom)
-            if (rect.contains(x,y)) {
+            with (tempRectF) {
+                left = bar.rect.left-barSpacing*factorHorizontal/2
+                top = paddingTop
+                right = bar.rect.right+barSpacing*factorHorizontal/2
+                bottom = height - paddingBottom
+            }
+
+            if (tempRectF.contains(x,y) && bar.color != 0) {
                 bar.color = accentColor
                 highlightedBar = bar
                 invalidate()
@@ -321,16 +371,28 @@ class ChartView @JvmOverloads constructor(
             }
         }
 
-        var rect = RectF(barLeft.rect.left-barSpacing*factorHorizontal/2, paddingBottom*factorVertical, barLeft.rect.right+barSpacing*factorHorizontal/2, barLeft.rect.bottom)
-        if (rect.contains(x,y)) {
+        with (tempRectF) {
+            left = barLeft.rect.left-barSpacing*factorHorizontal/2
+            top = paddingTop
+            right = barLeft.rect.right+barSpacing*factorHorizontal/2
+            bottom = bars[0].rect.bottom
+        }
+
+        if (tempRectF.contains(x,y)) {
             barLeft.color = accentColor
             highlightedBar = barLeft
             invalidate()
             return
         }
 
-        rect = RectF(barRight.rect.left-barSpacing*factorHorizontal/2, paddingBottom*factorVertical, barRight.rect.right+barSpacing*factorHorizontal/2, barRight.rect.bottom)
-        if (rect.contains(x,y)) {
+        with( tempRectF) {
+            left = barRight.rect.left-barSpacing*factorHorizontal/2
+            top = paddingBottom*factorVertical
+            right = barRight.rect.right+barSpacing*factorHorizontal/2
+            bottom = bars[0].rect.bottom
+        }
+
+        if (tempRectF.contains(x,y)) {
             barRight.color = accentColor
             highlightedBar = barRight
             invalidate()
@@ -339,7 +401,7 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun scroll(x:Int, y:Int) {
-        unhighlightBar()
+        unHighlightBar()
         if (isScrolled) return
         isScrolled = true
         val tempFactor = factorVertical
@@ -374,7 +436,8 @@ class ChartView @JvmOverloads constructor(
                         if (bars[0].i > 0) {
                             barLeft.i = bars[0].i - 1
                             val i = barLeft.i
-                            barLeft.value = points[i]
+                            barLeft.value = points[i].first
+                            barLeft.xCoord = points[i].second
                             barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
 
                             barLeft.rect.bottom = height - paddingBottom
@@ -397,7 +460,8 @@ class ChartView @JvmOverloads constructor(
                     if (!isLeftBarActive && bars[0].i > 0) {
                         barLeft.i = bars[0].i - 1
                         val i = barLeft.i
-                        barLeft.value = points[i]
+                        barLeft.value = points[i].first
+                        barLeft.xCoord = points[i].second
                         barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
                         barLeft.rect.bottom = height - paddingBottom
 
@@ -450,7 +514,8 @@ class ChartView @JvmOverloads constructor(
                         if (bars[bars.size - 1].i < bars.size-1) {
                             barRight.i = bars[bars.size - 1].i + 1
                             val i = barRight.i
-                            barRight.value = points[i]
+                            barRight.value = points[i].first
+                            barRight.xCoord = points[i].second
                             barRight.color = if (barRight.value >= limit) {
                                 successColor
                             } else {
@@ -475,7 +540,8 @@ class ChartView @JvmOverloads constructor(
                     if (!isRightBarActive && bars[bars.size - 1].i < points.size-1) {
                         barRight.i = bars[bars.size - 1].i + 1
                         val i = barRight.i
-                        barRight.value = points[i]
+                        barRight.value = points[i].first
+                        barRight.xCoord = points[i].second
                         barRight.color = if (barRight.value >= limit) {
                             successColor
                         } else {

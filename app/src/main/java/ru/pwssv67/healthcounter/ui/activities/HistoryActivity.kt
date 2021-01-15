@@ -9,8 +9,11 @@ import kotlinx.android.synthetic.main.activity_history.*
 import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.R
+import ru.pwssv67.healthcounter.extensions.normalStringDateToShort
 import ru.pwssv67.healthcounter.ui.views.ChartView
 import ru.pwssv67.healthcounter.viewModels.HistoryViewModel
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class HistoryActivity : AppCompatActivity(){
@@ -19,9 +22,9 @@ class HistoryActivity : AppCompatActivity(){
     private lateinit var chartCalories:ChartView
     private lateinit var chartTraining:ChartView
     private lateinit var profile: Profile
-    private val arrayGlasses = ArrayList<Int>()
-    private val arrayCalories = ArrayList<Int>()
-    private val arrayTraining = ArrayList<Int>()
+    private val arrayGlasses = ArrayList<Pair<Int, String>>()
+    private val arrayCalories = ArrayList<Pair<Int, String>>()
+    private val arrayTraining = ArrayList<Pair<Int, String>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +40,9 @@ class HistoryActivity : AppCompatActivity(){
             if (!it.isNullOrEmpty()) {
                 arrayGlasses.clear()
                 for (day in it) {
-                    arrayGlasses.add(day.glasses)
-                    arrayCalories.add(day.calories)
-                    arrayTraining.add(day.training)
+                    arrayGlasses.add(day.glasses to normalStringDateToShort(day.day))
+                    arrayCalories.add(day.calories to normalStringDateToShort(day.day))
+                    arrayTraining.add(day.training to normalStringDateToShort(day.day))
                 }
                 setDataOnCharts()
             }

@@ -21,6 +21,7 @@ class ChartBar(var rect: RectF, var paint: Paint) {
             value = chartBar.value
             i = chartBar.i
             color = chartBar.color
+            xCoord = chartBar.xCoord
         }
     }
 }
