@@ -20,4 +20,5 @@
     <string name="calories_info">Counting your calories is essential for staying fit and blah-blah-blah</string>
     <string name="training_info">For staying healthy it\'s really important to be active at least 15-30 minutes every day</string>
     <string name="remove">Remove</string>
+    <string name="minutes_two_lines">Minutes\nof training</string>
 </resources>

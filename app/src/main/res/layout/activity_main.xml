@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginLeft="19dp"
+        android:layout_marginLeft="18dp"
         android:elevation="0dp"
         android:text="@string/hello_main"
         android:fontFamily="@font/roboto_regular"
@@ -44,7 +44,7 @@
         android:textColor="@color/primaryText"
         android:elevation="0dp"
         android:textSize="@dimen/text_header_secondary"
-        android:layout_marginLeft="24dp"
+        android:layout_marginLeft="18dp"
         android:layout_marginRight="14dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_hello"
@@ -61,7 +61,7 @@
         android:textColor="#525252"
         android:fontFamily="@font/roboto_light"
         android:text="@string/today"
-        android:textSize="24sp"
+        android:textSize="@dimen/text_24sp"
         />
 
     <ImageView
@@ -80,10 +80,11 @@
         android:id="@+id/iv_settings"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="56dp"
+        android:layout_marginTop="24dp"
         android:src="@drawable/ic_tune_black_24dp"
         app:layout_constraintBottom_toTopOf="@id/av_ad_view"
-        app:layout_constraintRight_toRightOf="@id/v_training_background" />
+        app:layout_constraintRight_toRightOf="@id/v_training_background"
+        app:layout_constraintTop_toBottomOf="@id/v_training_background"/>
 
     <ImageView
         android:id="@+id/iv_drink_image"

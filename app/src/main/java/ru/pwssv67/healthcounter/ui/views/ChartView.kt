@@ -1,5 +1,6 @@
 package ru.pwssv67.healthcounter.ui.views
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
@@ -10,10 +11,15 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import androidx.core.content.res.ResourcesCompat
+import kotlinx.coroutines.*
 import ru.pwssv67.healthcounter.extensions.ChartBar
 import ru.pwssv67.healthcounter.R
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 
 class ChartView @JvmOverloads constructor(
@@ -62,14 +68,22 @@ class ChartView @JvmOverloads constructor(
     var highlightedBar:ChartBar? = null
     var showLimit = false
     lateinit var text:String
-    var textSizeInSp = 36
+    var textSize = 80
+    var labelTextSize = 40
+    var scope = MainScope()
     //var text = "Стаканов"
 
+
     init {
-        if (attrs!= null && !this.isInEditMode) {
+        if (attrs!= null
+            //&& !this.isInEditMode
+        ) {
             val a = context.obtainStyledAttributes(attrs, R.styleable.ChartView)
             if (a != null) {
-                text = a.getText(R.styleable.ChartView_text).toString()
+                text = (a.getText(R.styleable.ChartView_text) ?: "Sample").toString()
+                labelTextSize = a.getDimensionPixelSize(R.styleable.ChartView_labelTextSize, 50)
+                textSize = a.getDimensionPixelSize(R.styleable.ChartView_android_textSize, 80)
+                barsAmount = a.getInt(R.styleable.ChartView_barsAmount, 7)
             }
             a.recycle()
         } else {
@@ -86,7 +100,7 @@ class ChartView @JvmOverloads constructor(
 
     private fun setTextPaints(context: Context) {
         textPaint.color = textColor
-        textPaint.textSize = textSizeInSp * resources.displayMetrics.scaledDensity
+        textPaint.textSize = textSize.toFloat()
         if (!this.isInEditMode) {
             textPaint.typeface = Typeface.create(
                 ResourcesCompat.getFont(context, R.font.roboto_light),
@@ -98,7 +112,7 @@ class ChartView @JvmOverloads constructor(
         textPaint.textAlign = Paint.Align.CENTER
 
         textPaintSecondary.color = textColor
-        textPaintSecondary.textSize = textSizeInSp * resources.displayMetrics.scaledDensity / 2F
+        textPaintSecondary.textSize = labelTextSize.toFloat()
         if (!this.isInEditMode) {
             textPaintSecondary.typeface = Typeface.create(
                 ResourcesCompat.getFont(context, R.font.roboto_light),
@@ -110,7 +124,7 @@ class ChartView @JvmOverloads constructor(
         textPaintSecondary.textAlign = Paint.Align.CENTER
 
         textPaintAccent.color = successColor
-        textPaintAccent.textSize = textSizeInSp * resources.displayMetrics.scaledDensity * 0.8f
+        textPaintAccent.textSize = textSize * 0.7f
         if (!this.isInEditMode) {
             textPaintAccent.typeface = Typeface.create(
                 ResourcesCompat.getFont(context, R.font.roboto_light),
@@ -189,7 +203,7 @@ class ChartView @JvmOverloads constructor(
                 bars[i].paint
             )
 
-            if (bars[i].color != 0 && bars[i].xCoord != "0") {
+            if (bars[i].color != 0 && bars[i].xCoord != "") {
                 canvas?.drawText(
                     bars[i].xCoord,
                     (bars[i].rect.left + bars[i].rect.right) / 2,
@@ -296,7 +310,11 @@ class ChartView @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> onTouch(event.x, event.y)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> onUp()
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                onUp()
+                //scope.launch {normalizeBarsPosition() }
+
+            }
         }
         gestureDetector.onTouchEvent(event)
         super.onTouchEvent(event)
@@ -405,139 +423,84 @@ class ChartView @JvmOverloads constructor(
         if (isScrolled) return
         isScrolled = true
         val tempFactor = factorVertical
-        if (x<0) { // swiping right, must show left
-            if (points.size > barsAmount && bars[0].i != 0) {
-                for (bar in bars) {
-                    bar.rect.left -= x
-                    bar.rect.right -= x
-                }
-                barRight.rect.left -= x
-                barRight.rect.right -= x
-                barLeft.rect.left -= x
-                barLeft.rect.right -= x
-                //scrollAccumulator -= x
+        moveBars(x, tempFactor)
+        setFactors()
+        animateFactorChange(tempFactor, factorVertical)
+        invalidate()
+        isScrolled = false
+        scope.launch {
+            normalizeBarsPosition()
+        }
+    }
 
-                if (bars[0].i >= 1) {
-                    if ((bars[bars.size - 1].rect.left >= width) && isLeftBarActive ) {
-                        scrollAccumulator = 0
-
-                        if (isRightBarActive) {
-                            bars.last().copy(barRight)
-                            isRightBarActive = false
-                        }
-
-                        for (i in bars.size - 1 downTo 1) {
-                            bars[i].copy(bars[i-1])
-                        }
-
-                        bars[0].copy(barLeft)
-                        isLeftBarActive = false
-
-                        if (bars[0].i > 0) {
-                            barLeft.i = bars[0].i - 1
-                            val i = barLeft.i
-                            barLeft.value = points[i].first
-                            barLeft.xCoord = points[i].second
-                            barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
-
-                            barLeft.rect.bottom = height - paddingBottom
-
-                            if (barLeft.value <= maxValue/10) {
-                                barLeft.rect.top =
-                                    barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                            } else {
-                                barLeft.rect.top =
-                                    height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
-                            }
-                            barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
-                            barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
-                            isLeftBarActive = true
-                            setFactors()
-                            animateFactorChange(tempFactor, factorVertical)
-                        }
-                    }
-
-                    if (!isLeftBarActive && bars[0].i > 0) {
-                        barLeft.i = bars[0].i - 1
-                        val i = barLeft.i
-                        barLeft.value = points[i].first
-                        barLeft.xCoord = points[i].second
-                        barLeft.color = if (barLeft.value >= limit) { successColor } else { defaultColor }
-                        barLeft.rect.bottom = height - paddingBottom
-
-                        if (barLeft.value <= maxValue/10) {
-                            barLeft.rect.top =
-                                barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                        } else {
-                            barLeft.rect.top =
-                                height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
-                        }
-                        barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
-                        barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
-                        isLeftBarActive = true
-                        setFactors()
-                        animateFactorChange(tempFactor, factorVertical)
-                    }
-                }
-            }
-
-
+    private fun moveBars(x: Int, tempFactor: Float) {
+        if (x < 0) { // swiping right, must show left
+            moveBarsRight(x, tempFactor)
         } else {
-            if (points.size > barsAmount && bars[bars.size-1].i != points.size-1) {
-                for (bar in bars) {
-                    bar.rect.left -= x
-                    bar.rect.right -= x
-                }
-                barRight.rect.left -= x
-                barRight.rect.right -= x
-                barLeft.rect.left -= x
-                barLeft.rect.right -= x
-                //scrollAccumulator -= x
+            moveBarsLeft(x, tempFactor)
+        }
+    }
+
+   private suspend fun normalizeBarsPosition():Boolean {
+        delay(250)
+        if (isScrolled || bars[0].i != 0 && bars.last().i != points.size-1) return false
+        var center = 0f
+        if (barsAmount%2 == 1) {
+            center = bars[barsAmount/2].rect.centerX()
+            Log.e("center", "${barsAmount/2}")
+            Log.e("delta = ", "${center - width/2f}")
+        } else {
+            center = (bars[barsAmount/2].rect.centerX() + bars[barsAmount/2+1].rect.centerX())/2
+        }
+
+       if (center != width/2f) {
+           val isNeg = center-width/2f < 0
+           val x = abs(((center-width/2f)/5.2).toInt())
+           val animator = ValueAnimator.ofInt(0, x)
+           animator.duration = 200
+           animator.interpolator = LinearInterpolator()
+           animator.addUpdateListener {
+               if (it.animatedValue == x) isScrolled = false
+               moveBars(if (isNeg) -(it.animatedValue as Int) else it.animatedValue as Int, factorVertical)
+               invalidate()
+           }
+           isScrolled = true
+           animator.start()
+           return true
+       }
+        return false
+    }
+
+    private fun moveBarsLeft(x: Int, tempFactor: Float) {
+        if (points.size > barsAmount && (bars[bars.size - 1].i != points.size - 1 || bars.last().rect.right > width - barSpacing*factorHorizontal)) {
+            for (bar in bars) {
+                bar.rect.left -= x
+                bar.rect.right -= x
+            }
+            barRight.rect.left -= x
+            barRight.rect.right -= x
+            barLeft.rect.left -= x
+            barLeft.rect.right -= x
+            //scrollAccumulator -= x
 
 
-                if (bars[bars.size - 1].i <= points.size-2) {
-                    if ((bars[0].rect.right <= 0) && isRightBarActive) {
-                        scrollAccumulator = 0
+            if (bars[bars.size - 1].i <= points.size - 2) {
+                if ((bars[0].rect.right <= 0) && isRightBarActive) {
+                    scrollAccumulator = 0
 
-                        if (isLeftBarActive) {
-                            bars.first().copy(barLeft)
-                            isLeftBarActive = false
-                        }
-
-                        for (i in 0 until bars.size-1) {
-                            bars[i].copy(bars[i+1])
-                        }
-
-                        bars[bars.size - 1].copy(barRight)
-                        isRightBarActive = false
-
-                        if (bars[bars.size - 1].i < bars.size-1) {
-                            barRight.i = bars[bars.size - 1].i + 1
-                            val i = barRight.i
-                            barRight.value = points[i].first
-                            barRight.xCoord = points[i].second
-                            barRight.color = if (barRight.value >= limit) {
-                                successColor
-                            } else {
-                                defaultColor
-                            }
-                            barRight.rect.bottom = height - paddingBottom
-                            if (barRight.value <= maxValue / 10) {
-                                barRight.rect.top =
-                                    barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                            } else {
-                                barRight.rect.top =
-                                    height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
-                            }
-                            barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
-                            barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
-                            isRightBarActive = true
-                            setFactors()
-                            animateFactorChange(tempFactor, factorVertical)
-                        }
+                    if (isLeftBarActive) {
+                        bars.first().copy(barLeft)
+                        isLeftBarActive = false
                     }
 
-                    if (!isRightBarActive && bars[bars.size - 1].i < points.size-1) {
+                    for (i in 0 until bars.size - 1) {
+                        bars[i].copy(bars[i + 1])
+                    }
+
+                    bars[bars.size - 1].copy(barRight)
+                    isRightBarActive = false
+
+                    if (bars[bars.size - 1].i < bars.size - 1) {
                         barRight.i = bars[bars.size - 1].i + 1
                         val i = barRight.i
                         barRight.value = points[i].first
@@ -548,24 +511,127 @@ class ChartView @JvmOverloads constructor(
                             defaultColor
                         }
                         barRight.rect.bottom = height - paddingBottom
-                        if (barRight.value <= maxValue/ 10) {
+                        if (barRight.value <= maxValue / 10) {
                             barRight.rect.top =
                                 barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
                         } else {
                             barRight.rect.top =
                                 height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
                         }
-                        barRight.rect.left = bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
+                        barRight.rect.left =
+                            bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
                         barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
                         isRightBarActive = true
-                        setFactors()
-                        animateFactorChange(tempFactor, factorVertical)
                     }
+                }
+
+                if (!isRightBarActive && bars[bars.size - 1].i < points.size - 1) {
+                    barRight.i = bars[bars.size - 1].i + 1
+                    val i = barRight.i
+                    barRight.value = points[i].first
+                    barRight.xCoord = points[i].second
+                    barRight.color = if (barRight.value >= limit) {
+                        successColor
+                    } else {
+                        defaultColor
+                    }
+                    barRight.rect.bottom = height - paddingBottom
+                    if (barRight.value <= maxValue / 10) {
+                        barRight.rect.top =
+                            barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
+                    } else {
+                        barRight.rect.top =
+                            height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
+                    }
+                    barRight.rect.left =
+                        bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
+                    barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
+                    isRightBarActive = true
+
                 }
             }
         }
-        invalidate()
-        isScrolled = false
+    }
+
+    private fun moveBarsRight(x: Int, tempFactor: Float) {
+        if (points.size > barsAmount && (bars[0].i != 0 || bars[0].rect.left < barSpacing*factorHorizontal) || isLeftBarActive) {
+            for (bar in bars) {
+                bar.rect.left -= x
+                bar.rect.right -= x
+            }
+            barRight.rect.left -= x
+            barRight.rect.right -= x
+            barLeft.rect.left -= x
+            barLeft.rect.right -= x
+            //scrollAccumulator -= x
+
+            if (bars[0].i >= 1) {
+                if ((bars[bars.size - 1].rect.left >= width) && isLeftBarActive) {
+                    scrollAccumulator = 0
+
+                    if (isRightBarActive) {
+                        bars.last().copy(barRight)
+                        isRightBarActive = false
+                    }
+
+                    for (i in bars.size - 1 downTo 1) {
+                        bars[i].copy(bars[i - 1])
+                    }
+
+                    bars[0].copy(barLeft)
+                    isLeftBarActive = false
+
+                    if (bars[0].i > 0) {
+                        barLeft.i = bars[0].i - 1
+                        val i = barLeft.i
+                        barLeft.value = points[i].first
+                        barLeft.xCoord = points[i].second
+                        barLeft.color = if (barLeft.value >= limit) {
+                            successColor
+                        } else {
+                            defaultColor
+                        }
+
+                        barLeft.rect.bottom = height - paddingBottom
+
+                        if (barLeft.value <= maxValue / 10) {
+                            barLeft.rect.top =
+                                barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
+                        } else {
+                            barLeft.rect.top =
+                                height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
+                        }
+                        barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
+                        barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
+                        isLeftBarActive = true
+                    }
+                }
+
+                if (!isLeftBarActive && bars[0].i > 0) {
+                    barLeft.i = bars[0].i - 1
+                    val i = barLeft.i
+                    barLeft.value = points[i].first
+                    barLeft.xCoord = points[i].second
+                    barLeft.color = if (barLeft.value >= limit) {
+                        successColor
+                    } else {
+                        defaultColor
+                    }
+                    barLeft.rect.bottom = height - paddingBottom
+
+                    if (barLeft.value <= maxValue / 10) {
+                        barLeft.rect.top =
+                            barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
+                    } else {
+                        barLeft.rect.top =
+                            height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
+                    }
+                    barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
+                    barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
+                    isLeftBarActive = true
+                }
+            }
+        }
     }
 
     private fun animateBars(length:Long = 400) {
@@ -605,13 +671,17 @@ class ChartView @JvmOverloads constructor(
     }
 
     private inner class MyGestureListener : SimpleOnGestureListener() {
+        public var isScrolled = false
+
         override fun onScroll(
             e1: MotionEvent,
             e2: MotionEvent,
             distanceX: Float,
             distanceY: Float
         ): Boolean {
+            isScrolled = true
             scroll(distanceX.toInt(), distanceY.toInt())
+            isScrolled = false
             return true
         }
     }

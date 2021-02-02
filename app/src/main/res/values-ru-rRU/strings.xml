@@ -20,4 +20,5 @@
     <string name="calories_info">Считать калории важно и бла-бла-бла</string>
     <string name="training_info">Чтобы оставаться здоровым необходимо поддерживать физическую активность, и активно двигаться хотя бы 15-30 минут в день</string>
     <string name="remove">Убрать</string>
+    <string name="minutes_two_lines">Минут\nактивности</string>
 </resources>

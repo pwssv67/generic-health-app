@@ -2,5 +2,8 @@
 <resources>
     <declare-styleable name="ChartView">
         <attr name="text" format="string" />
+        <attr name = "labelTextSize" format="dimension"/>
+        <attr name="android:textSize" format="dimension"/>
+        <attr name = "barsAmount" format="integer"/>
     </declare-styleable>
 </resources>
