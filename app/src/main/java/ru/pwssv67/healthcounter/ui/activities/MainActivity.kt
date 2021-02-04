@@ -1,30 +1,49 @@
 package ru.pwssv67.healthcounter.ui.activities
 
+import android.Manifest
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.pwssv67.healthcounter.ui.dialogs.AddDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.pwssv67.healthcounter.R
 import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.extensions.Goal
 import ru.pwssv67.healthcounter.extensions.InfoPurpose
 import ru.pwssv67.healthcounter.extensions.Profile
-import ru.pwssv67.healthcounter.R
+import ru.pwssv67.healthcounter.models.WeatherForecastCurrent
+import ru.pwssv67.healthcounter.models.WeatherForecastModel
+import ru.pwssv67.healthcounter.network.NetworkService
+import ru.pwssv67.healthcounter.ui.dialogs.AddDialog
 import ru.pwssv67.healthcounter.ui.dialogs.InfoDialog
 import ru.pwssv67.healthcounter.viewModels.DayViewModel
+import java.io.IOException
+import java.time.Duration
+
 
 class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
@@ -48,6 +67,8 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     private lateinit var showHistory: ImageView
     private lateinit var settingsButton:ImageView
     private lateinit var helpButton: ImageView
+    private lateinit var locationManager: LocationManager
+    var weather:WeatherForecastModel? = null
     lateinit var mAdView:AdView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
@@ -55,6 +76,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     lateinit var profile: Profile
     private val ANIMATION_LONG:Long = 1000
     private val ANIMATION_SHORT:Long = 375
+    val scope = MainScope()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +87,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         loadData()
 
         MobileAds.initialize(this) {}
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         mAdView = av_ad_view
         val adRequest = AdRequest.Builder().build()
@@ -75,14 +98,64 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         super.onResume()
         profile = viewModel.getProfile()
         updateUIColors()
+        scope.launch { getWeatherForecast() }
+    }
+
+    private fun getWeatherForecast() {
+        try {
+            val location = if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 101)
+                return
+            } else {
+                locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+            }
+
+            //Log.e("location", "${location.latitude}")
+            val body = NetworkService.weatherApi.getData(
+                NetworkService.key,
+                location.latitude.toString() + ',' + location.longitude.toString()
+            )
+                .enqueue(
+                object : Callback<WeatherForecastModel> {
+                    override fun onResponse(
+                        call: Call<WeatherForecastModel?>,
+                        response: Response<WeatherForecastModel?>
+                    ) {
+                        weather = response.body()
+                        if (weather!=null && weather?.current!=null) {
+                            Toast.makeText(
+                                applicationContext,
+                                weather!!.current.temp_c.toString(),
+                                Toast.LENGTH_LONG
+                            )
+                                //.show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<WeatherForecastModel?>, t: Throwable) {
+                        t.printStackTrace()
+                    }
+                }
+            )
+
+        } catch (e: Exception) {
+            Log.e("exception", e.toString())
+        }
     }
 
     private fun initViewModel() {
         viewModel = DayViewModel(application)
             //ViewModelProvider(this, )
         viewModel.getDayStatsData().observe(this, Observer {
-            if (it == null) {day = DayStats(0,0,0)}
-            else {
+            if (it == null) {
+                day = DayStats(0, 0, 0)
+            } else {
                 day = it
                 drinkCounterView.text = "${day.glasses}"
                 eatCounterView.text = "${day.calories}"
@@ -281,7 +354,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
     }
 
-    override fun onDialogAddClick(dialog: DialogFragment, counter: Int, isFood: Boolean, isAdd: Boolean) {
+    override fun onDialogAddClick(
+        dialog: DialogFragment,
+        counter: Int,
+        isFood: Boolean,
+        isAdd: Boolean
+    ) {
         dialog.dismiss()
         if (isFood){
             if (isAdd) {
@@ -372,7 +450,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         val scale = 1.0.toFloat()
         Log.e("", "$scale")
-        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale * 1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.scaleX = animation?.animatedValue as Float
@@ -420,7 +498,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             eatCounterView.setTextColor(animation?.animatedValue as Int)
         }
 
-        val buttonColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+        val buttonColorAnimation = ValueAnimator.ofObject(
+            ArgbEvaluator(),
+            textColorFrom,
+            textColorTo
+        )
         buttonColorAnimation.duration = ANIMATION_SHORT
         buttonColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
@@ -463,7 +545,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
 
         val scale = imageTraining.scaleX
-        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale * 1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.scaleX = animation?.animatedValue as Float
@@ -520,14 +602,14 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         val addColorTo = getColor(R.color.colorPrimaryDark)
-        val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom,addColorTo)
+        val addColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, addColorTo)
         addColorAnimation.duration = ANIMATION_SHORT
         addColorAnimation.addUpdateListener { animation: ValueAnimator? ->
             addImage.setTint(animation?.animatedValue as Int)
         }
 
         val scale = 1.0.toFloat()
-        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale * 1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageDrink.scaleX = animation?.animatedValue as Float
@@ -582,7 +664,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         val scale = imageTraining.scaleX
-        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale*1.4).toFloat(), scale)
+        val scaleAnimation = ValueAnimator.ofFloat(scale, (scale * 1.4).toFloat(), scale)
         scaleAnimation.duration = ANIMATION_SHORT
         scaleAnimation.addUpdateListener { animation: ValueAnimator? ->
             imageTraining.scaleX = animation?.animatedValue as Float
@@ -631,7 +713,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             val textColorTo = getColor(R.color.primaryText)
             val addImage = eatAdd.drawable
             val minusImage = eatMinus.drawable
-            val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
+            val textColorAnimation = ValueAnimator.ofObject(
+                ArgbEvaluator(),
+                textColorFrom,
+                textColorTo
+            )
             textColorAnimation.duration = ANIMATION_SHORT
 
             textColorAnimation.addUpdateListener { animation: ValueAnimator? ->
