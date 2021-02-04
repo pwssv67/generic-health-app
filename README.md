@@ -1,6 +1,6 @@
 # generic-health-app
 
-App that only purpose is training. If you have literally any advices, how to make it better - please, contact me by email (pwssv@yandex.ru or tg @pwssv67)
-If you're somewhy want to install this - https://play.google.com/store/apps/details?id=ru.pwssv67.healthcounter
+An App whose sole purpose is to train. If you have any tips on how to make it better - please contact me by email (pwssv@yandex.ru or tg @pwssv67)
+If you want to install it for some reason - https://play.google.com/store/apps/details?id=ru.pwssv67.healthcounter
 
-Also, I want to publish my custom view as an independent library, but yet I've no idea how to do it. Pls help!
+I aslo want to publish my custom view as an standalone library, but I don't know how to do it yet. Pls help!
