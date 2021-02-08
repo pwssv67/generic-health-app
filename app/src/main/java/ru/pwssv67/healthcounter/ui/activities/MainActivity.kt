@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -68,7 +69,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     private lateinit var settingsButton:ImageView
     private lateinit var helpButton: ImageView
     private lateinit var locationManager: LocationManager
-    var weather:WeatherForecastModel? = null
     lateinit var mAdView:AdView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         loadData()
 
         MobileAds.initialize(this) {}
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         mAdView = av_ad_view
         val adRequest = AdRequest.Builder().build()
@@ -98,59 +97,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         super.onResume()
         profile = viewModel.getProfile()
         updateUIColors()
-        scope.launch { getWeatherForecast() }
-    }
 
-    private fun getWeatherForecast() {
-        try {
-            val location = if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) { ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 101)
-                return
-            } else {
-                locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-            }
-
-            //Log.e("location", "${location.latitude}")
-            val body = NetworkService.weatherApi.getData(
-                NetworkService.key,
-                location.latitude.toString() + ',' + location.longitude.toString()
-            )
-                .enqueue(
-                object : Callback<WeatherForecastModel> {
-                    override fun onResponse(
-                        call: Call<WeatherForecastModel?>,
-                        response: Response<WeatherForecastModel?>
-                    ) {
-                        weather = response.body()
-                        if (weather!=null && weather?.current!=null) {
-                            Toast.makeText(
-                                applicationContext,
-                                weather!!.current.temp_c.toString(),
-                                Toast.LENGTH_LONG
-                            )
-                                //.show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<WeatherForecastModel?>, t: Throwable) {
-                        t.printStackTrace()
-                    }
-                }
-            )
-
-        } catch (e: Exception) {
-            Log.e("exception", e.toString())
-        }
     }
 
     private fun initViewModel() {
-        viewModel = DayViewModel(application)
+        viewModel = DayViewModel(application, this)
             //ViewModelProvider(this, )
         viewModel.getDayStatsData().observe(this, Observer {
             if (it == null) {
@@ -164,6 +115,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             }
         })
         profile = viewModel.getProfile()
+
+        viewModel.weatherData.observe(this, Observer {
+            val builder = NotificationCompat.Builder(this)
+
+        })
     }
 
     private fun loadData() {

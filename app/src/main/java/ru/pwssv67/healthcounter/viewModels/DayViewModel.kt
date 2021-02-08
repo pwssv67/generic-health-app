@@ -1,23 +1,44 @@
 package ru.pwssv67.healthcounter.viewModels
 
-import android.app.Application
+import android.Manifest
+import android.app.*
+import android.content.Context.LOCATION_SERVICE
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import ru.pwssv67.healthcounter.App
+import ru.pwssv67.healthcounter.R
 import ru.pwssv67.healthcounter.database.DayStatsDatabase
 import ru.pwssv67.healthcounter.repositories.DayStatsRepository
 import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.extensions.Profile
+import ru.pwssv67.healthcounter.models.WeatherForecastModel
+import ru.pwssv67.healthcounter.network.NetworkService
 import ru.pwssv67.healthcounter.repositories.PreferencesRepository
 import java.time.LocalDate
 
-class DayViewModel(application: Application): AndroidViewModel(application) {
+class DayViewModel(application: Application, val currActivity: Activity): AndroidViewModel(application) {
     private val dayStatsRepository: DayStatsRepository
     private val preferencesRepository =
         PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
+    var weatherData = MutableLiveData<WeatherForecastModel>()
+    private lateinit var locationManager : LocationManager
+    var notificationChannel:NotificationChannel
+    val notificationManager: NotificationManager
+    var weather: WeatherForecastModel? = null
+    val applicationContext = App.applicationContext()
+    val NOTIFICATION_ID = 1
+
 
 
     init {
@@ -45,6 +66,23 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
 
         }
         dayStatsRepository.allDayStats.observeForever(tempObserver)
+        locationManager = application.getSystemService(LOCATION_SERVICE) as LocationManager
+        viewModelScope.launch { getWeatherForecast() }
+
+        weatherData.observeForever(Observer {
+            createWeatherNotification(it)
+        })
+
+        notificationManager = application.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (notificationManager.getNotificationChannel(App.NOTIFICATION_CHANNEL_1_ID) == null) {
+            notificationChannel = NotificationChannel(App.NOTIFICATION_CHANNEL_1_ID, "Good Weather Notification", NotificationManager.IMPORTANCE_LOW)
+            notificationChannel.description = "Description"
+            notificationChannel.enableLights(true)
+            notificationChannel.enableVibration(false)
+            notificationManager.createNotificationChannel(notificationChannel)
+        } else {
+            notificationChannel = notificationManager.getNotificationChannel(App.NOTIFICATION_CHANNEL_1_ID)
+        }
     }
 
     fun getDayStatsData(): MutableLiveData<DayStats> {
@@ -73,5 +111,57 @@ class DayViewModel(application: Application): AndroidViewModel(application) {
         if (dayStatsRepository.dayStatsData.value == null) {
             dayStatsRepository.saveDayStats(DayStats(0,0,0, LocalDate.now().toString()))
         }
+    }
+
+    private fun getWeatherForecast() {
+
+        try {
+            val location = if (ActivityCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) { ActivityCompat.requestPermissions(currActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 101)
+                return
+            } else {
+                locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+            }
+
+            //Log.e("location", "${location.latitude}")
+            val body = NetworkService.weatherApi.getData(
+                NetworkService.key,
+                location.latitude.toString() + ',' + location.longitude.toString()
+            )
+                .enqueue(
+                    object : Callback<WeatherForecastModel> {
+                        override fun onResponse(
+                            call: Call<WeatherForecastModel?>,
+                            response: Response<WeatherForecastModel?>
+                        ) {
+                            if (response.body() != null) {
+                                weatherData.postValue(response.body())
+                            }
+
+                            }
+
+                        override fun onFailure(call: Call<WeatherForecastModel?>, t: Throwable) {
+                            t.printStackTrace()
+                        }
+                    }
+                )
+
+        } catch (e: Exception) {
+            Log.e("exception", e.toString())
+        }
+    }
+
+    private fun createWeatherNotification(weatherForecastModel: WeatherForecastModel) {
+        val builder = NotificationCompat.Builder(applicationContext, App.NOTIFICATION_CHANNEL_1_ID)
+            .setSmallIcon(R.drawable.ic_flame)
+            .setContentTitle("Weather is Grrreat!")
+            .setContentText("Temperature is ${weatherForecastModel.current.temp_c}° C")
+            notificationManager. notify(NOTIFICATION_ID, builder.build())
     }
 }

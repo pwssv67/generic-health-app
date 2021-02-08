@@ -32,7 +32,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        viewModel = DayViewModel(application)
+        viewModel = DayViewModel(application,this)
         profile = viewModel.getProfile()
         drinkGoal.setText(profile.drink_goal.toString())
         caloriesGoal.setText(profile.eat_goal_second.toString())
