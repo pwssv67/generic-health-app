@@ -3,13 +3,13 @@ package ru.pwssv67.healthcounter.viewModels
 import android.Manifest
 import android.app.*
 import android.content.Context.LOCATION_SERVICE
-import android.content.Context.NOTIFICATION_SERVICE
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -23,8 +23,11 @@ import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.models.WeatherForecastModel
 import ru.pwssv67.healthcounter.network.NetworkService
+import ru.pwssv67.healthcounter.notification.NotificationHandler
 import ru.pwssv67.healthcounter.repositories.PreferencesRepository
+import ru.pwssv67.healthcounter.ui.activities.MainActivity
 import java.time.LocalDate
+import java.util.*
 
 class DayViewModel(application: Application, val currActivity: Activity): AndroidViewModel(application) {
     private val dayStatsRepository: DayStatsRepository
@@ -33,11 +36,11 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
     private var dayStatsData = MutableLiveData<DayStats>()
     var weatherData = MutableLiveData<WeatherForecastModel>()
     private lateinit var locationManager : LocationManager
-    var notificationChannel:NotificationChannel
-    val notificationManager: NotificationManager
     var weather: WeatherForecastModel? = null
     val applicationContext = App.applicationContext()
     val NOTIFICATION_ID = 1
+    var mTimer: Timer? = null
+    var mTimerTask: TimerTask? = null
 
 
 
@@ -67,22 +70,14 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
         }
         dayStatsRepository.allDayStats.observeForever(tempObserver)
         locationManager = application.getSystemService(LOCATION_SERVICE) as LocationManager
-        viewModelScope.launch { getWeatherForecast() }
+        //viewModelScope.launch { getWeatherForecast() }
+        createTimer()
 
         weatherData.observeForever(Observer {
-            createWeatherNotification(it)
+            //createWeatherNotification(it)
         })
 
-        notificationManager = application.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (notificationManager.getNotificationChannel(App.NOTIFICATION_CHANNEL_1_ID) == null) {
-            notificationChannel = NotificationChannel(App.NOTIFICATION_CHANNEL_1_ID, "Good Weather Notification", NotificationManager.IMPORTANCE_LOW)
-            notificationChannel.description = "Description"
-            notificationChannel.enableLights(true)
-            notificationChannel.enableVibration(false)
-            notificationManager.createNotificationChannel(notificationChannel)
-        } else {
-            notificationChannel = notificationManager.getNotificationChannel(App.NOTIFICATION_CHANNEL_1_ID)
-        }
+
     }
 
     fun getDayStatsData(): MutableLiveData<DayStats> {
@@ -115,6 +110,7 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
 
     private fun getWeatherForecast() {
 
+        if (currActivity !is MainActivity) return
         try {
             val location = if (ActivityCompat.checkSelfPermission(
                     applicationContext,
@@ -130,6 +126,7 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
             }
 
             //Log.e("location", "${location.latitude}")
+
             val body = NetworkService.weatherApi.getData(
                 NetworkService.key,
                 location.latitude.toString() + ',' + location.longitude.toString()
@@ -162,6 +159,20 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
             .setSmallIcon(R.drawable.ic_flame)
             .setContentTitle("Weather is Grrreat!")
             .setContentText("Temperature is ${weatherForecastModel.current.temp_c}° C")
-            notificationManager. notify(NOTIFICATION_ID, builder.build())
+            NotificationHandler.showNotification(builder.build(), NOTIFICATION_ID)
     }
+
+    private fun createTimer(){
+        if (mTimer != null) mTimer?.cancel()
+        mTimer = Timer()
+        mTimer?.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                getWeatherForecast()
+            }
+        },
+        0,
+        1*30*1000)
+    }
+
+
 }

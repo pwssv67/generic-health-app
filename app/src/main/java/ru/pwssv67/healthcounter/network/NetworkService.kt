@@ -17,7 +17,4 @@ object NetworkService {
         weatherApi = retrofit.create(WeatherApi::class.java)
     }
 
-
-
-
 }

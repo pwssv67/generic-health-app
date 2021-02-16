@@ -1,7 +1,9 @@
 package ru.pwssv67.healthcounter.models
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class WeatherForecastCurrent (
 
     @SerializedName("last_updated_epoch") val last_updated_epoch : Int,
