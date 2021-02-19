@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -42,6 +43,7 @@ import ru.pwssv67.healthcounter.network.NetworkService
 import ru.pwssv67.healthcounter.ui.dialogs.AddDialog
 import ru.pwssv67.healthcounter.ui.dialogs.InfoDialog
 import ru.pwssv67.healthcounter.viewModels.DayViewModel
+import ru.pwssv67.healthcounter.viewModels.DayViewModelFactory
 import java.io.IOException
 import java.time.Duration
 
@@ -98,10 +100,12 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         profile = viewModel.getProfile()
         updateUIColors()
 
+        viewModel.locationPermissionData.postValue(checkLocationPermissions())
     }
 
     private fun initViewModel() {
-        viewModel = DayViewModel(application, this)
+        val viewModelFactory = DayViewModelFactory(application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(DayViewModel::class.java)
             //ViewModelProvider(this, )
         viewModel.getDayStatsData().observe(this, Observer {
             if (it == null) {
@@ -116,10 +120,6 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         })
         profile = viewModel.getProfile()
 
-        viewModel.weatherData.observe(this, Observer {
-            val builder = NotificationCompat.Builder(this)
-
-        })
     }
 
     private fun loadData() {
@@ -700,6 +700,13 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
             buttonColorAnimation.start()
             addButtonColorAnimation.start()
         colorAnimation.start()
+    }
+
+    private fun checkLocationPermissions():Boolean {
+            return applicationContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED &&
+                    applicationContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
     }
 }
 

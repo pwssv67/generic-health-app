@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.pwssv67.healthcounter.extensions.Profile
 import ru.pwssv67.healthcounter.R
@@ -32,7 +33,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        viewModel = DayViewModel(application,this)
+        viewModel = ViewModelProvider(this).get(DayViewModel::class.java)
         profile = viewModel.getProfile()
         drinkGoal.setText(profile.drink_goal.toString())
         caloriesGoal.setText(profile.eat_goal_second.toString())

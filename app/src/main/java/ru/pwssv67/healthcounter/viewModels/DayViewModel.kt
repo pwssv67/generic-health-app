@@ -21,6 +21,7 @@ import ru.pwssv67.healthcounter.database.DayStatsDatabase
 import ru.pwssv67.healthcounter.repositories.DayStatsRepository
 import ru.pwssv67.healthcounter.extensions.DayStats
 import ru.pwssv67.healthcounter.extensions.Profile
+import ru.pwssv67.healthcounter.extensions.getLocation
 import ru.pwssv67.healthcounter.models.WeatherForecastModel
 import ru.pwssv67.healthcounter.network.NetworkService
 import ru.pwssv67.healthcounter.notification.NotificationHandler
@@ -29,19 +30,18 @@ import ru.pwssv67.healthcounter.ui.activities.MainActivity
 import java.time.LocalDate
 import java.util.*
 
-class DayViewModel(application: Application, val currActivity: Activity): AndroidViewModel(application) {
+class DayViewModel(application: Application): AndroidViewModel(application) {
     private val dayStatsRepository: DayStatsRepository
     private val preferencesRepository =
         PreferencesRepository
     private var dayStatsData = MutableLiveData<DayStats>()
     var weatherData = MutableLiveData<WeatherForecastModel>()
     private lateinit var locationManager : LocationManager
+    val locationPermissionData = MutableLiveData<Boolean>()
     var weather: WeatherForecastModel? = null
-    val applicationContext = App.applicationContext()
     val NOTIFICATION_ID = 1
     var mTimer: Timer? = null
     var mTimerTask: TimerTask? = null
-
 
 
     init {
@@ -56,6 +56,7 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
                 Log.e("fef", "${it.glasses}")
             }
         }
+
         dayStatsRepository.dayStatsData.observeForever(dataObserver)
         viewModelScope.launch {
             delay(1000)
@@ -71,12 +72,16 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
         dayStatsRepository.allDayStats.observeForever(tempObserver)
         locationManager = application.getSystemService(LOCATION_SERVICE) as LocationManager
         //viewModelScope.launch { getWeatherForecast() }
-        createTimer()
 
-        weatherData.observeForever(Observer {
-            //createWeatherNotification(it)
-        })
+        locationPermissionData.postValue(false)
 
+        locationPermissionData.observeForever {
+            if (it) viewModelScope.launch {
+                while (!checkLocation()){
+                    delay(100000)
+                }
+            }
+        }
 
     }
 
@@ -102,77 +107,22 @@ class DayViewModel(application: Application, val currActivity: Activity): Androi
         PreferencesRepository.saveProfileData(profile)
     }
 
+    private fun checkLocation():Boolean {
+        val location = getLocation(getApplication())
+        if (location != null) {
+            preferencesRepository.saveLatLongFromLocation(location)
+            return true
+        } else {
+            return false
+        }
+    }
+
     private suspend fun checkIfRecordExists() {
         if (dayStatsRepository.dayStatsData.value == null) {
             dayStatsRepository.saveDayStats(DayStats(0,0,0, LocalDate.now().toString()))
         }
     }
 
-    private fun getWeatherForecast() {
-
-        if (currActivity !is MainActivity) return
-        try {
-            val location = if (ActivityCompat.checkSelfPermission(
-                    applicationContext,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    applicationContext,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) { ActivityCompat.requestPermissions(currActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 101)
-                return
-            } else {
-                locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-            }
-
-            //Log.e("location", "${location.latitude}")
-
-            val body = NetworkService.weatherApi.getData(
-                NetworkService.key,
-                location.latitude.toString() + ',' + location.longitude.toString()
-            )
-                .enqueue(
-                    object : Callback<WeatherForecastModel> {
-                        override fun onResponse(
-                            call: Call<WeatherForecastModel?>,
-                            response: Response<WeatherForecastModel?>
-                        ) {
-                            if (response.body() != null) {
-                                weatherData.postValue(response.body())
-                            }
-
-                            }
-
-                        override fun onFailure(call: Call<WeatherForecastModel?>, t: Throwable) {
-                            t.printStackTrace()
-                        }
-                    }
-                )
-
-        } catch (e: Exception) {
-            Log.e("exception", e.toString())
-        }
-    }
-
-    private fun createWeatherNotification(weatherForecastModel: WeatherForecastModel) {
-        val builder = NotificationCompat.Builder(applicationContext, App.NOTIFICATION_CHANNEL_1_ID)
-            .setSmallIcon(R.drawable.ic_flame)
-            .setContentTitle("Weather is Grrreat!")
-            .setContentText("Temperature is ${weatherForecastModel.current.temp_c}° C")
-            NotificationHandler.showNotification(builder.build(), NOTIFICATION_ID)
-    }
-
-    private fun createTimer(){
-        if (mTimer != null) mTimer?.cancel()
-        mTimer = Timer()
-        mTimer?.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                getWeatherForecast()
-            }
-        },
-        0,
-        1*30*1000)
-    }
 
 
 }

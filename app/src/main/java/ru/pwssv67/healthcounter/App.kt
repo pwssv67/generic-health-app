@@ -37,11 +37,14 @@ class App:Application() {
         val myWorkRequest = PeriodicWorkRequestBuilder<WeatherForecastWorker>(
             15, TimeUnit.MINUTES
         )
-            .setConstraints(constraints)
+            //.setConstraints(constraints)
+            .setInitialDelay(1, TimeUnit.MINUTES)
             .build()
+
 
         WorkManager
             .getInstance(applicationContext)
+            //.enqueue(testWorkRequest)
             .enqueueUniquePeriodicWork(WEATHER_WORKER_NAME,ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest )
     }
 

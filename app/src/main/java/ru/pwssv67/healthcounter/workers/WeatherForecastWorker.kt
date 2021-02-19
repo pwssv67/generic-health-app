@@ -1,8 +1,10 @@
 package ru.pwssv67.healthcounter.workers
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.Data
 import androidx.work.Worker
@@ -20,6 +22,7 @@ import ru.pwssv67.healthcounter.extensions.getLocation
 import ru.pwssv67.healthcounter.models.WeatherForecastModel
 import ru.pwssv67.healthcounter.network.NetworkService
 import ru.pwssv67.healthcounter.notification.NotificationHandler
+import ru.pwssv67.healthcounter.repositories.PreferencesRepository
 
 class WeatherForecastWorker(appContext: Context, workerParams: WorkerParameters):
     Worker(appContext, workerParams){
@@ -35,12 +38,18 @@ class WeatherForecastWorker(appContext: Context, workerParams: WorkerParameters)
         return Result.success(Data.Builder().putString("weather", Json.encodeToString(weather)).build())
     }
 
+
     private fun getWeatherForecast(): WeatherForecastModel? {
         if (hasPermissions()) {
             val location = getLocation(applicationContext)
+            val key = if (location == null) {
+                PreferencesRepository.getLatLong()
+            } else {
+                location.latitude.toString() + ',' + location.longitude.toString()
+            }
             val response = NetworkService.weatherApi.getData(
                 NetworkService.key,
-                location?.latitude.toString() + ',' + location?.longitude.toString()
+                key
             )
                 .execute()
             return response.body()

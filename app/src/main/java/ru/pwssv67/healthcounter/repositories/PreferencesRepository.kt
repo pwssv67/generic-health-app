@@ -1,6 +1,7 @@
 package ru.pwssv67.healthcounter.repositories
 
 import android.content.SharedPreferences
+import android.location.Location
 import android.preference.PreferenceManager
 import ru.pwssv67.healthcounter.App
 import ru.pwssv67.healthcounter.extensions.Profile
@@ -12,6 +13,7 @@ object PreferencesRepository{
     private const val EAT_GOAL_FIRST = "EAT_GOAL_FIRST"
     private const val EAT_GOAL_SECOND = "EAT_GOAL_SECOND"
     private const val NAME = "NAME"
+    private const val LOCATION = "LOCATION"
 
     private val prefs: SharedPreferences by lazy {
         val ctx= App.applicationContext()
@@ -49,6 +51,14 @@ object PreferencesRepository{
                 EAT_GOAL_SECOND to eat_goal_second
             )
         }
+    }
+
+    fun saveLatLongFromLocation(location: Location) {
+        putValue(LOCATION to location.latitude.toString() + ',' + location.longitude.toString())
+    }
+
+    fun getLatLong():String {
+        return prefs.getString(LOCATION, "") ?: ""
     }
 
     private fun putValue(pair: Pair<String,Any>) = with(prefs.edit()) {
