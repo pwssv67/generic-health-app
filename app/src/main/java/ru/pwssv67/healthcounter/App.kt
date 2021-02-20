@@ -35,7 +35,7 @@ class App:Application() {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val myWorkRequest = PeriodicWorkRequestBuilder<WeatherForecastWorker>(
-            15, TimeUnit.MINUTES
+            1, TimeUnit.HOURS
         )
             //.setConstraints(constraints)
             .setInitialDelay(1, TimeUnit.MINUTES)

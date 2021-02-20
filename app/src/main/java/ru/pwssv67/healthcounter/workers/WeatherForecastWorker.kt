@@ -28,16 +28,15 @@ class WeatherForecastWorker(appContext: Context, workerParams: WorkerParameters)
     Worker(appContext, workerParams){
     override fun doWork(): Result {
         val weather = getWeatherForecast()
-        if (weather != null) {
+        if (weather != null && weather.isGoodForRunning()) {
             val builder = NotificationCompat.Builder(applicationContext, App.NOTIFICATION_CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.ic_flame)
-                .setContentTitle("Weather is Grrreat!")
-                .setContentText("Worker's temperature is ${weather.current.temp_c}° C")
+                .setContentTitle("Weather is Great!")
+                .setContentText("Why not go walking or running outdoor?")
             NotificationHandler.showNotification(builder.build(), 1)
         }
         return Result.success(Data.Builder().putString("weather", Json.encodeToString(weather)).build())
     }
-
 
     private fun getWeatherForecast(): WeatherForecastModel? {
         if (hasPermissions()) {
@@ -78,12 +77,14 @@ class WeatherForecastWorker(appContext: Context, workerParams: WorkerParameters)
         }
     }
 
+
     private fun hasPermissions(): Boolean {
          return applicationContext.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED &&
                  applicationContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
                  PackageManager.PERMISSION_GRANTED
     }
+
 
 
 }

@@ -16,6 +16,36 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 @Serializable
 data class WeatherForecastModel (
+
     @SerializedName("location") val location : WeatherForecastLocation,
     @SerializedName("current") val current : WeatherForecastCurrent
-)
+) {
+    fun isGoodForRunning():Boolean{
+        val temperature = current.temp_c
+        val humidity = current.humidity
+        val wind = current.wind_kph
+
+        //All temperature values are almost randomly picked
+        //Also idea of such simple calculation of temperature you feel is kinda idiotic
+        val feel = when (temperature) {
+            in -5.0..15.0 -> temperature-10.0*humidity/100-wind*0.5
+            in 15.0..25.0 -> temperature-5.0*humidity/100-wind*0.5
+            in 25.0..40.0 -> temperature+5.0*humidity/100+wind*0.5
+            else -> -40.0
+        }
+
+        when {
+            temperature < 0 -> {
+                if (feel>=-5.0 && current.condition.code in 800..804) return true
+            }
+            temperature in 0.0..15.0 -> {
+                if (feel >= 5 && current.condition.code in 800..804) return true
+            }
+            temperature in 15.0..30.0 -> {
+                if (feel < 27 && (current.condition.code in 800..804 || current.condition.code == 500)) return true
+            }
+            else -> return false
+        }
+        return false
+    }
+}
