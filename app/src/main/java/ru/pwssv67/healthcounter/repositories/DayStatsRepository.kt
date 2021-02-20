@@ -21,26 +21,5 @@ class DayStatsRepository (private val dao:DayStatsDao) {
         Log.e("rgr", "fefegehewgdsg ${dayStats.day} ${dayStats.glasses}")
     }
 
-    fun loadAll():LiveData<List<DayStats>> {
-        val data = dao.loadAll()
-        Log.e("rgrgrggr", "fff")
-        return data
-    }
-
-    /*
-
-    suspend fun getDayStats(day: String = LocalDate.now().toString()): DayStats? {
-        val data =dao.load()
-        Log.e("rgr", "get ${data}")
-        if (data.isNullOrEmpty()) {
-            val temp = DayStats(0,0,0)
-            saveDayStats(temp)
-            return temp
-        }
-        Log.e("rgr", "get ${data[0].day} ${data[0].glasses}")
-        return data[0]
-    }
-
-     */
 
 }

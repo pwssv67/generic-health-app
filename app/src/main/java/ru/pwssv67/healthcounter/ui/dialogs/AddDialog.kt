@@ -71,16 +71,6 @@ class AddDialog(private val isFood:Boolean = true, private val isAdd:Boolean = t
             }
         }
         input.showSoftInputOnFocus = true
-        /*
-        input.setOnFocusChangeListener { v, hasFocus ->
-            val imm = App.applicationContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            if(hasFocus) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0)
-            } else {
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
-            }
-        }
-        */
         input.requestFocus()
         return builder.create()
     }

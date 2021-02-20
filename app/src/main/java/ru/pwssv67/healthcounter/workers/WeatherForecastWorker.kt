@@ -52,26 +52,6 @@ class WeatherForecastWorker(appContext: Context, workerParams: WorkerParameters)
             )
                 .execute()
             return response.body()
-                    /*
-                .enqueue(
-                    object : Callback<WeatherForecastModel> {
-                        override fun onResponse (
-                            call: Call<WeatherForecastModel?>,
-                            response: Response<WeatherForecastModel?>
-                        ) {
-                            if (response.body() != null) {
-                                weather = response.body()
-                            }
-
-                        }
-
-                        override fun onFailure(call: Call<WeatherForecastModel?>, t: Throwable) {
-                            t.printStackTrace()
-                        }
-                    }
-                )
-                     */
-
         } else {
             return null
         }
