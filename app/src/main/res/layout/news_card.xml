@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    android:padding="16dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    android:elevation="@dimen/default_elevation">
+
+    <TextView
+        android:id="@+id/tv_news_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="Заголовок"
+        android:textColor="@color/primaryText"
+        android:textSize="@dimen/text_24sp"
+        />
+
+    <TextView
+        android:id="@+id/tv_news_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="25.08"
+        />
+
+    <TextView
+        android:id="@+id/tv_news_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_news_header"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="@string/lorem_ipsum"
+        android:textColor="@color/primaryText"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

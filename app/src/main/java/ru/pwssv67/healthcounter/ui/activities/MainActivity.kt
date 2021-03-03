@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
     private lateinit var settingsButton:ImageView
     private lateinit var helpButton: ImageView
     private lateinit var locationManager: LocationManager
+    private lateinit var newsButton: ImageView
     lateinit var mAdView:AdView
     var isGoalReachedDrink= false
     var isGoalReachedTraining = false
@@ -186,6 +187,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         showHistory = iv_show_history
         settingsButton = iv_settings
         helpButton = iv_help
+        newsButton = iv_news
 
 
         //Click Listeners
@@ -241,6 +243,11 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
 
         helpButton.setOnClickListener {
             viewHelp()
+        }
+
+        newsButton.setOnClickListener {
+            val intent = Intent(applicationContext, NewsActivity::class.java)
+            startActivity(intent)
         }
 
     }
