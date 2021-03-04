@@ -32,6 +32,7 @@
                 android:textColor="@color/primaryText"
                 android:textSize="@dimen/text_header_main"
                 android:text="@string/ok" />
+
         </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
