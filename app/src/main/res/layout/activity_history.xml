@@ -1,87 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    android:fillViewport="true"
+    android:isScrollContainer="true">
 
-    <View
-        android:id="@+id/header"
-        android:layout_height="120dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/header"
-        android:layout_marginHorizontal="8dp"
-        android:text="@string/your_history"
-        android:textSize="@dimen/text_header_main"
-        android:textColor="@color/primaryText"
-        android:fontFamily="@font/roboto_light"
-        android:backgroundTint="@color/primaryText"
-        />
+        <View
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:backgroundTint="@color/primaryText"
+            android:fontFamily="@font/roboto_light"
+            android:text="@string/your_history"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/text_header_main"
+            app:layout_constraintBottom_toBottomOf="@id/header"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ru.pwssv67.healthcounter.ui.views.ChartView
             android:id="@+id/glasses_chart_custom"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/header"
-            app:text="@string/glasses"
+            android:layout_marginHorizontal="4dp"
             android:background="@drawable/mainscreen_snippet_background"
-            android:backgroundTint="@color/backgroundColor"
+            android:backgroundTint="@color/upBackgroundColor"
             android:elevation="@dimen/default_elevation"
             android:textSize="@dimen/text_36sp"
-            android:layout_marginHorizontal="4dp"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header"
+            app:text="@string/glasses" />
 
         <ru.pwssv67.healthcounter.ui.views.ChartView
             android:id="@+id/calories_chart_custom"
             android:layout_width="match_parent"
             android:layout_height="180dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/mainscreen_snippet_background"
+            android:backgroundTint="@color/upBackgroundColor"
+            android:elevation="@dimen/default_elevation"
+            android:textSize="@dimen/text_36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/glasses_chart_custom"
-            app:text="@string/calories"
-            android:background="@drawable/mainscreen_snippet_background"
-            android:backgroundTint="@color/backgroundColor"
-            android:elevation="@dimen/default_elevation"
-            android:layout_marginTop="8dp"
-            android:layout_marginHorizontal="4dp"
-            android:textSize="@dimen/text_36sp"
-            />
+            app:text="@string/calories" />
 
         <ru.pwssv67.healthcounter.ui.views.ChartView
             android:id="@+id/training_chart_custom"
             android:layout_width="match_parent"
             android:layout_height="180dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/mainscreen_snippet_background"
+            android:backgroundTint="@color/upBackgroundColor"
+            android:elevation="@dimen/default_elevation"
+            android:textSize="@dimen/text_36sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/calories_chart_custom"
-            app:text="@string/minutes"
-            android:background="@drawable/mainscreen_snippet_background"
-            android:backgroundTint="@color/backgroundColor"
-            android:elevation="@dimen/default_elevation"
-            android:layout_marginHorizontal="4dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp"
-            android:textSize="@dimen/text_36sp"
-            />
+            app:text="@string/minutes" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

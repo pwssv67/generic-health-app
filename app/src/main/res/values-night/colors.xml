@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#283593</color>
+    <color name="colorAccent">#ffc346</color>
+    <color name="primaryText">#D1D1D1</color>
+    <color name="secondaryText">#8F8F8F</color>
+    <color name="dividerColor">#505050</color>
+    <color name="backgroundColor">#0F0F2B</color>
+    <color name="upBackgroundColor">#171740</color>
+    <color name="invertedBackgroundColor">#D1D1D1</color>
+    <color name="buttonsSuccessColor">#D1D1D1</color>
+    <color name = "successColor">#EEA8E849</color>
+    <color name = "warningColor">#EAFFAB40</color>
+    <color name = "dangerColor">#DDFF6E40</color>
+</resources>

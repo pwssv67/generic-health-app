@@ -399,7 +399,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         //})
 
         val textColorFrom = getColor(R.color.primaryText)
-        val textColorTo = getColor(R.color.backgroundColor)
+        val textColorTo = getColor(R.color.buttonsSuccessColor)
         val addImage = drinkAdd.drawable
         val minusImage = drinkMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
@@ -452,7 +452,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         }
 
         val textColorFrom = getColor(R.color.primaryText)
-        val textColorTo = getColor(R.color.backgroundColor)
+        val textColorTo = getColor(R.color.buttonsSuccessColor)
         val addImage = eatAdd.drawable
         val minusImage = eatMinus.drawable
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
@@ -497,7 +497,7 @@ class MainActivity : AppCompatActivity(), AddDialog.AddDialogListener {
         //})
 
         val textColorFrom = getColor(R.color.primaryText)
-        val textColorTo = getColor(R.color.backgroundColor)
+        val textColorTo = getColor(R.color.buttonsSuccessColor)
         val textColorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), textColorFrom, textColorTo)
         textColorAnimation.duration = ANIMATION_SHORT
         textColorAnimation.addUpdateListener { animation: ValueAnimator? ->

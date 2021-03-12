@@ -7,6 +7,9 @@
     <color name="secondaryText">#515151</color>
     <color name="dividerColor">#BDBDBD</color>
     <color name="backgroundColor">#FFFFFFFF</color>
+    <color name="upBackgroundColor">#FFFFFF</color>
+    <color name="invertedBackgroundColor">#212121</color>
+    <color name="buttonsSuccessColor">#FFFFFF</color>
     <color name = "successColor">#EEA8E849</color>
     <color name = "warningColor">#EAFFAB40</color>
     <color name = "dangerColor">#DDFF6E40</color>

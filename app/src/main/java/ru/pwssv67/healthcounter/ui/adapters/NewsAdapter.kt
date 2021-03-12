@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -13,12 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.pwssv67.healthcounter.R
 import ru.pwssv67.healthcounter.models.News
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.util.*
 
 class NewsAdapter(private val listener:(News)->Unit, val context: Context):RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
-    private var items: List<News> = listOf<News>()
+    private var items: List<News> = listOf()
 
     fun updateData(data: List <News>) {
         items = data

@@ -123,7 +123,7 @@ class ChartView @JvmOverloads constructor(
         }
         textPaintSecondary.textAlign = Paint.Align.CENTER
 
-        textPaintAccent.color = successColor
+        textPaintAccent.color = accentColor
         textPaintAccent.textSize = textSize * 0.7f
         if (!this.isInEditMode) {
             textPaintAccent.typeface = Typeface.create(
