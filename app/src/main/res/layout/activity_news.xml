@@ -6,7 +6,8 @@
     tools:context=".ui.activities.NewsActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/backgroundColor">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -19,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/header_background"
-            android:backgroundTint="@color/backgroundColor"
+            android:backgroundTint="@color/upBackgroundColor"
             android:gravity="center"
             app:layout_scrollFlags="scroll"
             android:padding="16dp">

@@ -12,14 +12,18 @@
 
     <TextView
         android:id="@+id/tv_news_header"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:text="Заголовок"
+        android:layout_marginRight="8dp"
         android:textColor="@color/primaryText"
         android:textSize="@dimen/text_24sp"
-        />
+        app:layout_constraintEnd_toStartOf="@+id/tv_news_date"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="8dp"
+        tools:text="Заголовок"
+        app:layout_constraintHorizontal_weight="10" />
 
     <TextView
         android:id="@+id/tv_news_date"
@@ -29,6 +33,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:textColor="@color/secondaryText"
         tools:text="25.08"
+        app:layout_constraintHorizontal_weight="1"
         />
 
     <TextView
@@ -38,6 +43,7 @@
         app:layout_constraintTop_toBottomOf="@id/tv_news_header"
         app:layout_constraintLeft_toLeftOf="parent"
         tools:text="@string/lorem_ipsum"
-        android:textColor="@color/primaryText"/>
+        android:textColor="@color/primaryText"
+        android:layout_marginTop="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

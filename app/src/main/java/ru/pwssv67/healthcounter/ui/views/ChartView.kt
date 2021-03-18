@@ -36,8 +36,7 @@ class ChartView @JvmOverloads constructor(
     private var textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     private var textPaintSecondary = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     private var textPaintAccent = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-    private val barLeft = ChartBar(RectF(0f,0f,0f,0f), paint)
-    private val barRight = ChartBar(RectF(0f,0f,0f,0f), paint)
+    private val additionalBar = ChartBar(RectF(0f,0f,0f,0f), paint)
     var points: ArrayList<Pair<Int, String>> = defaultPoints
     private val bars = ArrayList<ChartBar>()
     private val rounding = 3f
@@ -53,8 +52,7 @@ class ChartView @JvmOverloads constructor(
     private var barWidth = 3f
     private var barSpacing = 7f
     private var barsAmount = 6
-    private var isRightBarActive = false
-    private var isLeftBarActive = false
+    private var isAdditionalBarActive = false
     private var scrollAccumulator = 0
     private var isScrolled = false
     private var animationCounter = 1f
@@ -72,6 +70,7 @@ class ChartView @JvmOverloads constructor(
     var labelTextSize = 40
     var scope = MainScope()
     //var text = "Стаканов"
+    // TODO refactor the hell all. 2 addBars -> 1
 
 
     init {
@@ -154,12 +153,7 @@ class ChartView @JvmOverloads constructor(
                 max = bars[i].value
             }
         }
-        if (isLeftBarActive) {
-            if (barLeft.value>max) max = barLeft.value
-        }
-        if (isRightBarActive) {
-            if (barRight.value>max) max = barRight.value
-        }
+        if (isAdditionalBarActive && additionalBar.value>max) {max = additionalBar.value}
 
         if (max <= 0) max = limit
         factorVertical = h / (max*2).toFloat()
@@ -213,35 +207,21 @@ class ChartView @JvmOverloads constructor(
             }
         }
 
-        if (isLeftBarActive) {
-            paint.color = barLeft.color
-            var top = height - (barLeft.value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
-            if (barLeft.rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  barLeft.rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
-            barLeft.rect.top = top
+        if (isAdditionalBarActive) {
+            paint.color = additionalBar.color
+            var top = height - (additionalBar.value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
+            if (additionalBar.rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  additionalBar.rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
+            additionalBar.rect.top = top
             canvas?.drawRoundRect(
-                barLeft.rect,
+                additionalBar.rect,
                 rounding * factorHorizontal / 1.5f,
                 rounding * factorHorizontal / 1.5f,
-                barLeft.paint
+                additionalBar.paint
             )
 
-            canvas?.drawText(barLeft.xCoord, (barLeft.rect.left + barLeft.rect.right ) / 2 , barLeft.rect.bottom + paddingBottom/1.5F, textPaintSecondary)
+            canvas?.drawText(additionalBar.xCoord, (additionalBar.rect.left + additionalBar.rect.right ) / 2 , additionalBar.rect.bottom + paddingBottom/1.5F, textPaintSecondary)
         }
 
-        if (isRightBarActive) {
-            paint.color = barRight.color
-            var top = height - (barRight.value)*factorVertical*animationCounter - rounding*factorHorizontal/3f
-            if (barRight.rect.bottom-top < zeroHeight*factorHorizontal/1.3f) top =  barRight.rect.bottom - zeroHeight*factorHorizontal/1.3f*animationCounter
-            barRight.rect.top = top
-            canvas?.drawRoundRect(
-                barRight.rect,
-                rounding * factorHorizontal / 1.5f,
-                rounding * factorHorizontal / 1.5f,
-                barRight.paint
-            )
-
-            canvas?.drawText(barRight.xCoord, (barRight.rect.left + barRight.rect.right ) / 2 , barRight.rect.bottom + paddingBottom/1.5F, textPaintSecondary)
-        }
     }
 
     private fun drawLimitLine(canvas: Canvas?) {
@@ -303,7 +283,7 @@ class ChartView @JvmOverloads constructor(
             }
         }
 
-        maxValue = points.maxBy { it.first }?.first ?: (limit*1.2).toInt()
+        maxValue = points.maxByOrNull { it.first }?.first ?: (limit*1.2).toInt()
 
     }
 
@@ -339,16 +319,9 @@ class ChartView @JvmOverloads constructor(
             }
         }
 
-        if (barLeft.color == accentColor) {
-            barLeft.color = when {
-                barLeft.value >= limit -> successColor
-                else -> defaultColor
-            }
-        }
-
-        if (barRight.color == accentColor) {
-            barRight.color = when {
-                barRight.value >= limit -> successColor
+        if (additionalBar.color == accentColor) {
+            additionalBar.color = when {
+                additionalBar.value >= limit -> successColor
                 else -> defaultColor
             }
         }
@@ -390,35 +363,23 @@ class ChartView @JvmOverloads constructor(
         }
 
         with (tempRectF) {
-            left = barLeft.rect.left-barSpacing*factorHorizontal/2
+            left = additionalBar.rect.left-barSpacing*factorHorizontal/2
             top = paddingTop
-            right = barLeft.rect.right+barSpacing*factorHorizontal/2
+            right = additionalBar.rect.right+barSpacing*factorHorizontal/2
             bottom = bars[0].rect.bottom
         }
 
         if (tempRectF.contains(x,y)) {
-            barLeft.color = accentColor
-            highlightedBar = barLeft
+            additionalBar.color = accentColor
+            highlightedBar = additionalBar
             invalidate()
             return
         }
 
-        with( tempRectF) {
-            left = barRight.rect.left-barSpacing*factorHorizontal/2
-            top = paddingBottom*factorVertical
-            right = barRight.rect.right+barSpacing*factorHorizontal/2
-            bottom = bars[0].rect.bottom
-        }
-
-        if (tempRectF.contains(x,y)) {
-            barRight.color = accentColor
-            highlightedBar = barRight
-            invalidate()
-            return
-        }
     }
 
     private fun scroll(x:Int, y:Int) {
+        if (points.size <= bars.size)
         unHighlightBar()
         if (isScrolled) return
         isScrolled = true
@@ -472,165 +433,110 @@ class ChartView @JvmOverloads constructor(
     }
 
     private fun moveBarsLeft(x: Int, tempFactor: Float) {
-        if (points.size > barsAmount && (bars[bars.size - 1].i != points.size - 1 || bars.last().rect.right > width - barSpacing*factorHorizontal)) {
-            for (bar in bars) {
-                bar.rect.left -= x
-                bar.rect.right -= x
-            }
-            barRight.rect.left -= x
-            barRight.rect.right -= x
-            barLeft.rect.left -= x
-            barLeft.rect.right -= x
-            //scrollAccumulator -= x
 
+        if (bars.last().i == points.size-1 && bars.last().rect.right <= width -  barSpacing * factorHorizontal || isAdditionalBarActive && additionalBar.i == points.size-1 && additionalBar.rect.right <= width -  barSpacing * factorHorizontal) {
+            return
+        }
 
-            if (bars[bars.size - 1].i <= points.size - 2) {
-                if ((bars[0].rect.right <= 0) && isRightBarActive) {
-                    scrollAccumulator = 0
+        for (bar in bars) {
+            bar.rect.left -= x
+            bar.rect.right -= x
+        }
+        if (isAdditionalBarActive) {
+            additionalBar.rect.left -= x
+            additionalBar.rect.right -= x
+        }
 
-                    if (isLeftBarActive) {
-                        bars.first().copy(barLeft)
-                        isLeftBarActive = false
-                    }
-
-                    for (i in 0 until bars.size - 1) {
-                        bars[i].copy(bars[i + 1])
-                    }
-
-                    bars[bars.size - 1].copy(barRight)
-                    isRightBarActive = false
-
-                    if (bars[bars.size - 1].i < bars.size - 1) {
-                        barRight.i = bars[bars.size - 1].i + 1
-                        val i = barRight.i
-                        barRight.value = points[i].first
-                        barRight.xCoord = points[i].second
-                        barRight.color = if (barRight.value >= limit) {
-                            successColor
-                        } else {
-                            defaultColor
-                        }
-                        barRight.rect.bottom = height - paddingBottom
-                        if (barRight.value <= maxValue / 10) {
-                            barRight.rect.top =
-                                barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                        } else {
-                            barRight.rect.top =
-                                height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
-                        }
-                        barRight.rect.left =
-                            bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
-                        barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
-                        isRightBarActive = true
-                    }
+        if (bars.last().rect.right < width -  barSpacing*factorHorizontal && (!isAdditionalBarActive || additionalBar.rect.right < width -  barSpacing*factorHorizontal)) {
+            var nextIndex = 0
+            if (additionalBar.rect.left > bars.last().rect.left) {
+                nextIndex = additionalBar.i+1
+                for (i in 0 until bars.size-1) {
+                    Log.d("M_bar", "$i was on ${bars[i].rect.centerX()} now on ${bars[i+1].rect.centerX()}")
+                    bars[i].copy(bars[i+1])
                 }
-
-                if (!isRightBarActive && bars[bars.size - 1].i < points.size - 1) {
-                    barRight.i = bars[bars.size - 1].i + 1
-                    val i = barRight.i
-                    barRight.value = points[i].first
-                    barRight.xCoord = points[i].second
-                    barRight.color = if (barRight.value >= limit) {
-                        successColor
-                    } else {
-                        defaultColor
+                bars.last().copy(additionalBar)
+            }
+            else {
+                if (isAdditionalBarActive && additionalBar.rect.right > 0) {
+                    for (i in bars.size-1 downTo 1) {
+                        Log.d("M_bar", "barbar $i was on ${bars[i].rect.centerX()} now on ${bars[i-1].rect.centerX()}")
+                        bars[i].copy(bars[i-1])
                     }
-                    barRight.rect.bottom = height - paddingBottom
-                    if (barRight.value <= maxValue / 10) {
-                        barRight.rect.top =
-                            barRight.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                    } else {
-                        barRight.rect.top =
-                            height - (barRight.value) * factorVertical - rounding * factorHorizontal / 3f
-                    }
-                    barRight.rect.left =
-                        bars[bars.size - 1].rect.right + barSpacing * factorHorizontal
-                    barRight.rect.right = barRight.rect.left + barWidth * factorHorizontal
-                    isRightBarActive = true
-
+                    nextIndex = bars.last().i+1
+                    bars[0].copy(additionalBar)
+                } else {
+                    nextIndex = bars.last().i+1
                 }
             }
+            if (nextIndex>=points.size) {return}
+            additionalBar.i = nextIndex
+            additionalBar.value = points[nextIndex].first
+            additionalBar.xCoord = points[nextIndex].second
+            additionalBar.color = if(additionalBar.value >= limit) {successColor} else {defaultColor}
+            additionalBar.color = accentColor
+            with (additionalBar.rect) {
+                bottom = height - paddingBottom
+                top = if (additionalBar.value <= maxValue/10)
+                {bottom - zeroHeight*factorHorizontal/1.3f}
+                else {height - additionalBar.value*factorVertical - rounding*factorHorizontal/1.3f}
+                left = bars.last().rect.right + barSpacing * factorHorizontal
+                right = left + barWidth * factorHorizontal
+            }
+            isAdditionalBarActive = true
         }
     }
 
     private fun moveBarsRight(x: Int, tempFactor: Float) {
-        if (points.size > barsAmount && (bars[0].i != 0 || bars[0].rect.left < barSpacing*factorHorizontal) || isLeftBarActive) {
-            for (bar in bars) {
-                bar.rect.left -= x
-                bar.rect.right -= x
+
+        if (bars[0].i == 0 && bars[0].rect.left >= barSpacing * factorHorizontal || isAdditionalBarActive && additionalBar.i == 0 && additionalBar.rect.left >= barSpacing * factorHorizontal) {
+            return
+        }
+
+        for (bar in bars) {
+            bar.rect.left -= x
+            bar.rect.right -=x
+        }
+        if (isAdditionalBarActive) {
+            additionalBar.rect.left-=x
+            additionalBar.rect.right-=x
+        }
+
+        if (bars[0].rect.left > barSpacing*factorHorizontal && (!isAdditionalBarActive || additionalBar.rect.left > barSpacing*factorHorizontal)) {
+            var nextIndex = 0
+            if (additionalBar.rect.left > bars.last().rect.left) {
+                nextIndex = bars[0].i-1
+                for (i in 0 until bars.size-1) {
+                    bars[i].copy(bars[i+1])
+                }
+                if (isAdditionalBarActive) {bars.last().copy(additionalBar)}
             }
-            barRight.rect.left -= x
-            barRight.rect.right -= x
-            barLeft.rect.left -= x
-            barLeft.rect.right -= x
-            //scrollAccumulator -= x
-
-            if (bars[0].i >= 1) {
-                if ((bars[bars.size - 1].rect.left >= width) && isLeftBarActive) {
-                    scrollAccumulator = 0
-
-                    if (isRightBarActive) {
-                        bars.last().copy(barRight)
-                        isRightBarActive = false
+            else {
+                if (isAdditionalBarActive && additionalBar.rect.right > 0) {
+                    for (i in bars.size-1 downTo 1) {
+                        bars[i].copy(bars[i-1])
                     }
-
-                    for (i in bars.size - 1 downTo 1) {
-                        bars[i].copy(bars[i - 1])
-                    }
-
-                    bars[0].copy(barLeft)
-                    isLeftBarActive = false
-
-                    if (bars[0].i > 0) {
-                        barLeft.i = bars[0].i - 1
-                        val i = barLeft.i
-                        barLeft.value = points[i].first
-                        barLeft.xCoord = points[i].second
-                        barLeft.color = if (barLeft.value >= limit) {
-                            successColor
-                        } else {
-                            defaultColor
-                        }
-
-                        barLeft.rect.bottom = height - paddingBottom
-
-                        if (barLeft.value <= maxValue / 10) {
-                            barLeft.rect.top =
-                                barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                        } else {
-                            barLeft.rect.top =
-                                height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
-                        }
-                        barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
-                        barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
-                        isLeftBarActive = true
-                    }
+                        nextIndex = additionalBar.i-1
+                        bars[0].copy(additionalBar)
+                } else {
+                    nextIndex = bars[0].i-1
                 }
 
-                if (!isLeftBarActive && bars[0].i > 0) {
-                    barLeft.i = bars[0].i - 1
-                    val i = barLeft.i
-                    barLeft.value = points[i].first
-                    barLeft.xCoord = points[i].second
-                    barLeft.color = if (barLeft.value >= limit) {
-                        successColor
-                    } else {
-                        defaultColor
-                    }
-                    barLeft.rect.bottom = height - paddingBottom
-
-                    if (barLeft.value <= maxValue / 10) {
-                        barLeft.rect.top =
-                            barLeft.rect.bottom - zeroHeight * factorHorizontal / 1.3f
-                    } else {
-                        barLeft.rect.top =
-                            height - (barLeft.value) * factorVertical - rounding * factorHorizontal / 3f
-                    }
-                    barLeft.rect.right = bars[0].rect.left - barSpacing * factorHorizontal
-                    barLeft.rect.left = barLeft.rect.right - barWidth * factorHorizontal
-                    isLeftBarActive = true
-                }
             }
+            if (nextIndex<0) {return}
+            additionalBar.i = nextIndex
+            additionalBar.value = points[nextIndex].first
+            additionalBar.xCoord = points[nextIndex].second
+            additionalBar.color = if(additionalBar.value >= limit) {successColor} else {defaultColor}
+            with (additionalBar.rect) {
+                bottom = height - paddingBottom
+                top = if (additionalBar.value <= maxValue/10)
+                    {bottom - zeroHeight*factorHorizontal/1.3f}
+                else {height - additionalBar.value*factorVertical - rounding*factorHorizontal/1.3f}
+                right = bars[0].rect.left - barSpacing * factorHorizontal
+                left = right - barWidth * factorHorizontal
+            }
+            isAdditionalBarActive = true
         }
     }
 
